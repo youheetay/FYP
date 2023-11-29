@@ -18,7 +18,7 @@ class FragmentSavingPlan : Fragment() {
 
     private lateinit var budgetBtn : Button
     private lateinit var savingBtn : Button
-    private var db = Firebase.firestore
+//    private var db = Firebase.firestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
