@@ -78,7 +78,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView13" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayout"
+                android:id="@+id/periods"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="307dp"
                 android:layout_height="wrap_content"
@@ -91,7 +91,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/savingName">
 
                 <AutoCompleteTextView
-                    android:id="@+id/autoCompleteTextView3"
+                    android:id="@+id/period"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -110,7 +110,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.031"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
+                app:layout_constraintTop_toBottomOf="@+id/periods" />
 
             <EditText
                 android:id="@+id/targetAmount"
