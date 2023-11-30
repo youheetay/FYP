@@ -42,6 +42,13 @@
                 android:text="Start with Budgets to have an efficient overview of your spending limits"
                 android:textColor="#FFFFFF" />
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                tools:listitem="@layout/budgetlist_item" />
+
             <Button
                 android:id="@+id/budgetBtn"
                 android:layout_width="wrap_content"
@@ -50,6 +57,7 @@
                 android:layout_marginTop="65dp"
                 android:backgroundTint="#FF9800"
                 android:text="Create Budget" />
+
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
 
