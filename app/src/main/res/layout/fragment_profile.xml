@@ -5,10 +5,121 @@
     android:layout_height="match_parent"
     tools:context=".fragments.ProfileFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Profile fragment" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:background="@color/cardview_shadow_start_color">
+
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/baseline_person_2_24"/>
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="15dp"
+            android:layout_margin="15dp"
+            android:background="@color/cardview_shadow_start_color">
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:background="@drawable/baseline_person_2_24"
+                android:id="@+id/profileIc"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/profileName"
+                android:layout_alignStart="@+id/profileIc"
+                android:text="Try"
+                android:layout_marginStart="50dp"
+                android:textSize="18sp"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/profileName"
+                android:background="@color/white"
+                android:layout_marginTop="15dp"
+                android:id="@+id/dividerName"/>
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:background="@drawable/baseline_mail_outline_24"
+                android:id="@+id/icEmail"
+                android:layout_below="@+id/dividerName"
+                android:layout_marginTop="20dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/profileEmail"
+                android:layout_alignStart="@+id/icEmail"
+                android:layout_below="@id/dividerName"
+                android:text="Try@gmail.com"
+                android:layout_marginStart="50dp"
+                android:textSize="18sp"
+                android:layout_marginTop="20dp"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/profileEmail"
+                android:background="@color/white"
+                android:layout_marginTop="15dp"
+                android:id="@+id/dividerEmail"/>
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:background="@drawable/baseline_phone_android_24"
+                android:id="@+id/icPhone"
+                android:layout_below="@+id/dividerEmail"
+                android:layout_marginTop="20dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/profilePhone"
+                android:layout_alignStart="@+id/icPhone"
+                android:layout_below="@id/dividerEmail"
+                android:text="01234567890"
+                android:layout_marginStart="50dp"
+                android:textSize="18sp"
+                android:layout_marginTop="20dp"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/profileEmail"
+                android:background="@color/white"
+                android:layout_marginTop="15dp"
+                android:id="@+id/dividerPhone"/>
+
+        </RelativeLayout>
+
+
+        <Button
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="Edit Profile"
+            android:layout_gravity="center"/>
+
+    </LinearLayout>
+
 
 </FrameLayout>

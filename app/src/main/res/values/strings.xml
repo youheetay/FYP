@@ -1,7 +1,27 @@
 <resources>
     <string name="app_name">FYP</string>
+
+    <string-array name="budgetPeriod">
+        <item>Weekly</item>
+        <item>Monthly</item>
+        <item>One Time</item>
+    </string-array>
+
     <string name="navigation_drawer_open">Open Navigation Drawer</string>
     <string name="navigation_drawer_close">Close Navigation Drawer</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="category">
+        <item>General</item>
+        <item>Food &amp; Beverage</item>
+        <item>Entertainment</item>
+        <item>Education</item>
+        <item>Bills</item>
+        <item>Shopping</item>
+        <item>Transportation</item>
+    </string-array>
+
+
 </resources>

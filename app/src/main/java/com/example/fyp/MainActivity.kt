@@ -1,5 +1,6 @@
 package com.example.fyp
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
@@ -13,7 +14,6 @@ import androidx.fragment.app.FragmentTransaction
 import com.example.fyp.fragments.AccountFragment
 import com.example.fyp.fragments.DashBoardFragment
 import com.example.fyp.fragments.ProfileFragment
-import com.example.fyp.fragments.SavingFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import org.checkerframework.checker.nullness.qual.NonNull
@@ -25,14 +25,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var dashboardFragment: DashBoardFragment
     private lateinit var accountFragment: AccountFragment
     private lateinit var profileFragment: ProfileFragment
-    private lateinit var savingFragment: SavingFragment
+    private lateinit var insight: insight
+//    private lateinit var savingFragment: SavingFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val toolbar : Toolbar = findViewById(R.id.toolbar)
-        toolbar.setTitle("Expense Manager")
+        toolbar.setTitle("Welcome")
 
         val drawerLayout : DrawerLayout = findViewById(R.id.drawer_layout)
         bottomNavigationView = findViewById(R.id.bottomNavBar)
@@ -51,7 +52,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         dashboardFragment =  DashBoardFragment()
         accountFragment =  AccountFragment()
         profileFragment =  ProfileFragment()
-        savingFragment = SavingFragment()
+        insight = insight()
+//        savingFragment = SavingFragment()
 
         setFragment(dashboardFragment)
 
@@ -65,20 +67,30 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun handleBottomNavigation(item: MenuItem) {
         when (item.itemId) {
             R.id.dashboard -> {
+                val toolbar : Toolbar = findViewById(R.id.toolbar)
+                toolbar.setTitle("Welcome")
                 setFragment(dashboardFragment)
-                bottomNavigationView.setItemBackgroundResource(R.color.dashboard_color)
+                bottomNavigationView.setItemBackgroundResource(R.color.black)
             }
             R.id.account -> {
+                val toolbar : Toolbar = findViewById(R.id.toolbar)
+                toolbar.setTitle("Wallet")
                 setFragment(accountFragment)
-                bottomNavigationView.setItemBackgroundResource(R.color.account_color)
+                bottomNavigationView.setItemBackgroundResource(R.color.black)
             }
             R.id.saving -> {
-                setFragment(savingFragment)
-                bottomNavigationView.setItemBackgroundResource(R.color.saving_color)
+//                val toolbar : Toolbar = findViewById(R.id.toolbar)
+//                toolbar.setTitle("Saving Plan")
+//                setFragment(savingFragment)
+//                bottomNavigationView.setItemBackgroundResource(R.color.black)
+                val intent = Intent(this, insight::class.java)
+                startActivity(intent)
+                true // Return true to indicate that the item click is handled
             }
-            R.id.profile -> {
+            R.id.profile -> {val toolbar : Toolbar = findViewById(R.id.toolbar)
+                toolbar.setTitle("Profile")
                 setFragment(profileFragment)
-                bottomNavigationView.setItemBackgroundResource(R.color.profile_color)
+                bottomNavigationView.setItemBackgroundResource(R.color.black)
             }
 
         }
