@@ -1,8 +1,8 @@
 package com.example.fyp
 
 data class Budget(
-    val id: String? = null,
-    val budgetName: String? = null,
-    val period: String? = null,
-    val targetAmount: Double? = null
+    var budgetID: String?= "",
+    var budgetName: String? = null,
+    var period: String? = null,
+    var targetAmount: Double? = null
 )

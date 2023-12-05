@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">FYP</string>
+
+    <string-array name="budgetPeriod">
+        <item>Weekly</item>
+        <item>Monthly</item>
+        <item>One Time</item>
+    </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
