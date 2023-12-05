@@ -2,4 +2,12 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="red">#FF0000</color>
+    <color name="blue">#FF2196F3</color>
+
+    <color name="dashboard_color">#FF3F51B5</color>
+    <color name="account_color">#FF5722</color>
+    <color name="budget_color">#FF9800</color>
+    <color name="saving_color">#FFEB3B</color>
+    <color name="profile_color">#8BC34A</color>
 </resources>
