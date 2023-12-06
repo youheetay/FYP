@@ -87,10 +87,10 @@ class dashboardAdapter(
 
             }
 
-        alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
-            dialog.dismiss()
-        }
-        alertDialogBuilder.show()
+            alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            alertDialogBuilder.show()
         }
     }
 

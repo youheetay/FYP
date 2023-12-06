@@ -34,15 +34,15 @@ class LoginActivity : AppCompatActivity() {
             val password = userPassword.text.toString()
 
             if(email.isNotEmpty() && password.isNotEmpty()){
-                    auth.signInWithEmailAndPassword(email,password).addOnCompleteListener{
-                        if(it.isSuccessful){
-                            val mainIntent = Intent(this, MainActivity::class.java)
-                            startActivity(mainIntent)
-                            finish()
-                        }else{
-                            Toast.makeText(this,it.exception.toString(), Toast.LENGTH_SHORT).show()
-                        }
+                auth.signInWithEmailAndPassword(email,password).addOnCompleteListener{
+                    if(it.isSuccessful){
+                        val mainIntent = Intent(this, MainActivity::class.java)
+                        startActivity(mainIntent)
+                        finish()
+                    }else{
+                        Toast.makeText(this,it.exception.toString(), Toast.LENGTH_SHORT).show()
                     }
+                }
             }
             else if(email.isEmpty()){
                 Toast.makeText(this,"Email cannot be empty!",Toast.LENGTH_SHORT).show()
