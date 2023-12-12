@@ -26,20 +26,17 @@ class BudgetRecyclerAdapter(
     private val context: Context,
     private val budgetList : ArrayList<Budget>,
     private val parentContext: Context,
-    private val layoutInflater: LayoutInflater // pass the layout inflater here
+    private val expenseList : ArrayList<Expense>
 ) : RecyclerView.Adapter<BudgetRecyclerAdapter.MyViewHolder>() {
 
-    private lateinit var editBtn: ImageButton
-    private lateinit var budget : Budget
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): MyViewHolder {
+    ): BudgetRecyclerAdapter.MyViewHolder {
 
-        val itemView = layoutInflater.inflate(R.layout.budgetlist_item, parent, false)
-
-        editBtn = itemView.findViewById(R.id.editButton)
+        val itemView =
+            LayoutInflater.from(parent.context).inflate(R.layout.budgetlist_item, parent, false)
 
         return MyViewHolder(itemView)
     }
@@ -51,11 +48,13 @@ class BudgetRecyclerAdapter(
         val editBtn:ImageButton = itemView.findViewById(R.id.editButton)
     }
 
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: BudgetRecyclerAdapter.MyViewHolder, position: Int) {
         val budget: Budget = budgetList[position]
         holder.budgetName.text = budget.budgetName
         holder.period.text = budget.period
         holder.targetAmt.text = budget.targetAmount.toString()
+        val expense: Expense = expenseList[position]
+//        updateTargetAmt(holder,budget, expense)
 
         holder.editBtn.setOnClickListener {
             val positionUpdate = holder.adapterPosition
@@ -70,7 +69,7 @@ class BudgetRecyclerAdapter(
             val periodEditText = dialogView.findViewById<Spinner>(R.id.spinner)
             val amountEditText = dialogView.findViewById<EditText>(R.id.targetAmount)
 
-            nameEditText.setText(updateBudget.budgetName)
+
 
             // Set the selected item of the spinner to the value from updateBudget
             val periodArray = holder.itemView.resources.getStringArray(R.array.budgetPeriod)
@@ -79,8 +78,9 @@ class BudgetRecyclerAdapter(
             periodEditText.adapter = periodAdapter
 
             val periodPosition = periodArray.indexOf(updateBudget.period)
-            periodEditText.setSelection(periodPosition)
 
+            nameEditText.setText(updateBudget.budgetName)
+            periodEditText.setSelection(periodPosition)
             amountEditText.setText(updateBudget.targetAmount.toString())
 
             alertDialogBuilder.setView(dialogView)
@@ -90,7 +90,7 @@ class BudgetRecyclerAdapter(
                 //dismiss dialog
                 dialog.dismiss()
 
-//                alertDialogBuilder.setPositiveButton("Update") { _, _ ->
+
                     val newName = nameEditText.text.toString()
                     val newPeriod = periodEditText.selectedItem.toString()
                     val newAmount = amountEditText.text.toString().toDoubleOrNull() ?: 0.0
@@ -98,10 +98,6 @@ class BudgetRecyclerAdapter(
 
                     updateBudgetDetails(holder, position, newName, newPeriod, newAmount)
 
-//                }
-//                alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
-//                    dialog.dismiss()
-//                }
             }
 
             dialogView.findViewById<ImageButton>(R.id.cancelEditBtn).setOnClickListener {
@@ -127,44 +123,51 @@ class BudgetRecyclerAdapter(
     }
 
     private fun updateBudgetDetails(
-        holder: MyViewHolder,
+        holder: BudgetRecyclerAdapter.MyViewHolder,
         position: Int,
-        newName: String,
-        newPeriod: String,
-        newAmount: Double,
+        newName: String?,
+        newPeriod: String?,
+        newAmount: Double?,
     ) {
-
+        Log.d("BudgetAdapter", "updateBudgetDetails: position=$position, budgetList.size=${budgetList.size}")
         val db = FirebaseFirestore.getInstance()
-        val updateBudget = budgetList[position]
-            val updatedData = mapOf(
-                "budgetName" to newName,
-                "period" to newPeriod,
-                "targetAmount" to newAmount
-            )
 
+        val updateBudget = budgetList[position]
+        val updatedData = mapOf(
+            "budgetName" to newName,
+            "period" to newPeriod,
+            "targetAmount" to newAmount
+        )
         val documentId = updateBudget.budgetID // Use the existing document ID
 
-            db.collection("budgets").document(documentId.toString())
-                .update(updatedData)
-                .addOnSuccessListener {
-                    budgetList[position].budgetName = newName
-                    budgetList[position].period = newPeriod
-                    budgetList[position].targetAmount = newAmount
+        db.collection("budgets").document(documentId.toString())
+            .update(updatedData)
+            .addOnSuccessListener {
+                Log.d("BudgetAdapter", "updateBudgetDetails: position=$position, budgetList.size=${budgetList.size}")
+                // Update the local list first
+                budgetList[position].budgetName = newName
+                budgetList[position].period = newPeriod
+                budgetList[position].targetAmount = newAmount
+
+                // Check if the list is not empty before notifying item change
+                if (budgetList.isNotEmpty()) {
+                    // Call notifyItemChanged after updating the local list
                     notifyItemChanged(position)
-                    Toast.makeText(
-                        holder.itemView.context,
-                        "Update Success",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-                .addOnFailureListener { e ->
-                    Toast.makeText(
-                        holder.itemView.context,
-                        "Error updating budget: ${e.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
                 }
 
+                Toast.makeText(
+                    holder.itemView.context,
+                    "Update Success",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(
+                    holder.itemView.context,
+                    "Error updating budget: ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
     }
 
 
@@ -200,5 +203,45 @@ class BudgetRecyclerAdapter(
     override fun getItemCount(): Int {
         return budgetList.size
     }
+
+    private fun updateTargetAmt(
+        holder: BudgetRecyclerAdapter.MyViewHolder,
+        budget: Budget,
+        expense: Expense
+    ) {
+        // Get the target amount from the budget
+        val targetAmount = budget.targetAmount
+
+        // Subtract the expense amount from the target amount
+        val updatedTargetAmount = targetAmount?.minus(expense.eNum)
+
+        // Check if the updated target amount is not null and greater than or equal to zero
+        if (updatedTargetAmount != null && updatedTargetAmount >= 0) {
+            // Update the target amount in the budget
+            budget.targetAmount = updatedTargetAmount
+
+            // Update the target amount in Firestore
+            budget.budgetID?.let {
+                val db = FirebaseFirestore.getInstance()
+                db.collection("budgets").document(it)
+                    .update("targetAmount", budget.targetAmount)
+                    .addOnSuccessListener {
+                        // Update successful
+                        Log.d("Expense", "Target amount updated successfully")
+
+                        // Update the target amount TextView
+                        holder.targetAmt.text = updatedTargetAmount.toString()
+                    }
+                    .addOnFailureListener { e ->
+                        // Handle failure
+                        Log.e("Expense", "Error updating target amount: ${e.message}")
+                    }
+            }
+        } else {
+            // Handle the case where the updated target amount is negative or null
+            Log.e("Expense", "Invalid updated target amount: $updatedTargetAmount")
+        }
+    }
+
 
 }
