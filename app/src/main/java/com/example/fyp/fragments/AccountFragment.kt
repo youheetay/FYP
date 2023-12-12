@@ -1,9 +1,7 @@
 package com.example.fyp.fragments
 
 import android.app.AlertDialog
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,12 +9,15 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fyp.Account
-import com.example.fyp.PayActivity
+import com.example.fyp.Expense
 import com.example.fyp.R
 import com.example.fyp.adapter.accountAdapter
+import com.example.fyp.adapter.dashboardAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -56,8 +57,11 @@ class AccountFragment : Fragment() {
         }
 
         rootView.findViewById<Button>(R.id.paypalButton).setOnClickListener{
-            val paymentIntent = Intent(requireContext(), PayActivity::class.java)
-            startActivity(paymentIntent)
+//            val paypalFragment = PaypalFragment()
+//            val fragmentTransaction : FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
+//            fragmentTransaction.replace(R.id.main_frame, paypalFragment)
+//            fragmentTransaction.addToBackStack(null)
+//            fragmentTransaction.commit()
         }
 
         return rootView
@@ -67,7 +71,6 @@ class AccountFragment : Fragment() {
 
         // Example of data retrieval in your Fragment/Activity
         db.collection("Account")
-            .whereEqualTo("userId", userId)
             .get()
             .addOnSuccessListener { result ->
                 accountList.clear() // Clear existing data
@@ -103,40 +106,18 @@ class AccountFragment : Fragment() {
                 val accDate = accCardNumStr.toInt()
                 val accCode = accCardNumStr.toInt()
                 val accAmount = accCardNumStr.toDouble()
-                val currentUser = FirebaseAuth.getInstance().currentUser
-                val userId = currentUser?.uid
 
                 val account = Account(
                     accName = accName,
                     accCardNumber = accCardNum,
                     accCardDate = accDate,
                     accCardCode = accCode,
-                    accCardAmount = accAmount,
-                    userId = userId
+                    accCardAmount = accAmount
                 )
 
                 db.collection("Account").add(account)
-                    .addOnSuccessListener {documentReference ->
-                        // After successfully adding to Firestore, you can get the document ID
-                        val documentId = documentReference.id
-                        db.collection("Account")
-                            .document(documentId)
-                            .update("id", documentId)
-                            .addOnSuccessListener {
-                                // Log success
-                                Log.d("DashBoardFragment", "Document ID added successfully")
-                            }
-                            .addOnFailureListener { exception ->
-                                // Log error
-                                Log.e("DashBoardFragment", "Error adding Document ID: $exception")
-                            }
-                        account.id = documentId
+                    .addOnSuccessListener {
                         Toast.makeText(requireContext(), "Upload Successful", Toast.LENGTH_SHORT).show()
-                        val currentUser = FirebaseAuth.getInstance().currentUser
-                        if (currentUser != null){
-                            val userId = currentUser.uid
-                            EventChangeListener(userId)
-                        }
                         dialog.dismiss()
                     }
                     .addOnFailureListener { error ->

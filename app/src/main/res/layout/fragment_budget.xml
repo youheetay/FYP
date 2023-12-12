@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/budgetFragment"
     android:layout_width="400dp"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".budgetFragment">
 
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"
@@ -63,7 +64,7 @@
                 android:layout_marginTop="16dp"
                 android:ems="10"
                 android:inputType="text"
-                android:textColor="#020202"
+                android:textColor="#FFFFFF"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.075"
                 app:layout_constraintStart_toStartOf="parent"
