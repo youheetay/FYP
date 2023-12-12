@@ -9,8 +9,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="center_vertical">
+        android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -105,10 +104,39 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_below="@id/profileEmail"
+                android:layout_below="@id/profilePhone"
                 android:background="@color/white"
                 android:layout_marginTop="15dp"
                 android:id="@+id/dividerPhone"/>
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:background="@drawable/baseline_male_24"
+                android:id="@+id/icGenderMale"
+                android:layout_below="@+id/dividerPhone"
+                android:layout_marginTop="20dp"
+                android:visibility="visible"/>
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:background="@drawable/baseline_female_24"
+                android:id="@+id/icGenderFemale"
+                android:layout_below="@+id/dividerPhone"
+                android:layout_marginTop="20dp"
+                android:visibility="invisible"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/profileGender"
+                android:layout_alignStart="@+id/icPhone"
+                android:layout_below="@id/dividerPhone"
+                android:text="Gender"
+                android:layout_marginStart="50dp"
+                android:textSize="18sp"
+                android:layout_marginTop="20dp"/>
 
         </RelativeLayout>
 
@@ -117,7 +145,8 @@
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:text="Edit Profile"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:id="@+id/editProfileBtn"/>
 
     </LinearLayout>
 

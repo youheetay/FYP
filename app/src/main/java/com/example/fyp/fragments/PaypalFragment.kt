@@ -1,27 +1,27 @@
-//package com.example.fyp.fragments
-//
-//import android.app.Activity
-//import android.content.Intent
-//import android.os.Bundle
-//import androidx.fragment.app.Fragment
-//import android.view.LayoutInflater
-//import android.view.View
-//import android.view.ViewGroup
-//import android.widget.Button
-//import android.widget.EditText
-//import android.widget.TextView
-//import android.widget.Toast
-//import com.example.fyp.R
-//import com.google.androidbrowserhelper.playbilling.provider.PaymentActivity
+package com.example.fyp.fragments
+
+import android.app.Activity
+import android.content.Intent
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
+import com.example.fyp.R
+import com.google.androidbrowserhelper.playbilling.provider.PaymentActivity
 //import com.paypal.android.sdk.payments.*
-//
-//import org.json.JSONException
-//import org.json.JSONObject
-//import java.math.BigDecimal
-//
-//
-//class PaypalFragment : Fragment() {
-//
+
+import org.json.JSONException
+import org.json.JSONObject
+import java.math.BigDecimal
+
+
+class PaypalFragment : Fragment() {
+
 //    private lateinit var editAmount: EditText
 //    private lateinit var btnPayment: Button
 //    private var PAYPAL_REQUEST_CODE: Int = 123
@@ -114,4 +114,4 @@
 //        requireContext().stopService(intent)
 //        super.onDestroy()
 //    }
-//}
+}

@@ -14,16 +14,19 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.fyp.Account
 import com.example.fyp.Expense
 import com.example.fyp.R
 import com.example.fyp.adapter.dashboardAdapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import java.text.SimpleDateFormat
@@ -40,6 +43,10 @@ class DashBoardFragment : Fragment() {
     private lateinit var expenseList : ArrayList<Expense>
     private lateinit var dashboardAdapter: dashboardAdapter
     private var selectedExpense: Expense? = null
+    private lateinit var setThisMonthExpense: TextView
+    private lateinit var setLastMonthExpense: TextView
+    private lateinit var accounts: List<Account>
+
 
     private val db = FirebaseFirestore.getInstance()
 
@@ -80,6 +87,9 @@ class DashBoardFragment : Fragment() {
             addExpense()
         }
 
+        setThisMonthExpense = rootView.findViewById(R.id.setThisMonthExpense)
+        setLastMonthExpense = rootView.findViewById(R.id.setLastMonthExpense)
+
 
         return rootView
     }
@@ -92,13 +102,10 @@ class DashBoardFragment : Fragment() {
             .setView(v)
             .create()
 
-
-
         v.findViewById<EditText>(R.id.expenseNameEdit).setText(expense.eName)
         v.findViewById<EditText>(R.id.amountExpenseEdit).setText(expense.eNum.toString())
         editDateButton = v.findViewById(R.id.datePickerBtnEdit)
         editDateButton.setText(expense.eDate)
-        //editDateButton.text = expense.eDate
         initDatePickerEdit(v)
 
         val spinnerCategory = v.findViewById<Spinner>(R.id.spinnerExpenseEdit)
@@ -118,7 +125,7 @@ class DashBoardFragment : Fragment() {
             val eDate = editDateButton.text.toString()
             val eCategory = spinnerCategory.selectedItem.toString()
 
-            if (validateInput(eName, eNumStr, eCategory)) {
+            if (validateInput(eName, eNumStr, eCategory,"")) {
                 val eNum = eNumStr.toDouble()
 
                 // Update the fields of the selectedExpense
@@ -141,7 +148,6 @@ class DashBoardFragment : Fragment() {
         editDialog.show()
 
     }
-
 
 
     private fun updateExpenseInFirestore(expense: Expense) {
@@ -178,6 +184,8 @@ class DashBoardFragment : Fragment() {
             .create()
 
         val currentUser = FirebaseAuth.getInstance().currentUser
+        val spinnerAccount = v.findViewById<Spinner>(R.id.spinnerAccount)
+        val spinnerAccountValue = populateAccountSpinner(spinnerAccount)
 
         initDatePicker(v)
         dateButton = v.findViewById(R.id.datePickerBtn)
@@ -196,16 +204,23 @@ class DashBoardFragment : Fragment() {
             val eNumStr = v.findViewById<EditText>(R.id.amountExpenseAdd).text.toString()
             val eDate = dateButton.text.toString()
             val eCategory = spinnerCategory.selectedItem.toString()
+            val accountId = getSelectedAccountId(spinnerAccount)
 
-            if (validateInput(eName, eNumStr,eCategory)) {
+            val userId = currentUser?.uid
+
+            if (validateInput(eName, eNumStr,eCategory,accountId)) {
                 val eNum = eNumStr.toDouble()
 
                 val expense = Expense(
                     eName = eName,
                     eNum = eNum,
                     eDate = eDate,
-                    eCategory = eCategory
+                    eCategory = eCategory,
+                    userId = userId,
+                    accountId = accountId
                 )
+
+                deductAmountFromAccount(accountId, eNum)
 
                 db.collection("Expense")
                     .add(expense)
@@ -250,24 +265,108 @@ class DashBoardFragment : Fragment() {
         addDialog.show()
     }
 
-    private fun EventChangeListener(userId: String){
+    private fun populateAccountSpinner(spinner: Spinner) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            val userId = currentUser.uid
+            db.collection("Account")
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnSuccessListener { result ->
+                    accounts = result.toObjects(Account::class.java)
 
-        // Example of data retrieval in your Fragment/Activity
+                    // Populate the spinner with account names
+                    val accountNames = accounts.map { it.accName }.toMutableList()
+                    val hint = "Select Account"
+                    accountNames.add(0, hint)
+
+                    val adapter = ArrayAdapter(
+                        requireContext(),
+                        android.R.layout.simple_spinner_item,
+                        accountNames
+                    )
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    spinner.adapter = adapter
+                }
+                .addOnFailureListener { exception ->
+                    Toast.makeText(
+                        requireContext(),
+                        "Error getting accounts: $exception",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+        }
+    }
+
+    private fun getSelectedAccountId(spinner: Spinner): String {
+
+        // Check if accounts is initialized
+        if (!::accounts.isInitialized) {
+            return ""
+        }
+
+        val selectedAccountName = spinner.selectedItem.toString()
+        val selectedAccount = accounts.find { it.accName == selectedAccountName }
+        return selectedAccount?.id ?: ""
+    }
+
+
+
+
+    private fun deductAmountFromAccount(accountId: String, expenseAmount: Double) {
+        val accountRef = db.collection("Account").document(accountId)
+
+        // Use FieldValue.increment to atomically subtract the expense amount
+        accountRef.update("accCardAmount", FieldValue.increment(-expenseAmount))
+            .addOnSuccessListener {
+                Log.d("DashBoardFragment", "Expense amount deducted from account successfully")
+            }
+            .addOnFailureListener { e ->
+                Log.e("DashBoardFragment", "Error deducting expense amount from account", e)
+            }
+    }
+
+
+
+    private fun EventChangeListener(userId: String) {
         db.collection("Expense")
+            .whereEqualTo("userId", userId)
             .get()
             .addOnSuccessListener { result ->
                 expenseList.clear() // Clear existing data
+                var currentMonthTotal = 0.0
+                var previousMonthTotal = 0.0
+
+                val currentDate = Calendar.getInstance()
+                val currentYear = currentDate.get(Calendar.YEAR)
+                val currentMonth = currentDate.get(Calendar.MONTH) + 1 // Months are zero-based
+                val previousMonth = if (currentMonth == 1) 12 else currentMonth - 1
+
                 for (document in result) {
                     val expense = document.toObject(Expense::class.java)
                     expenseList.add(expense)
+
+                    // Calculate totals based on current and previous months
+                    val expenseDate = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).parse(expense.eDate)
+                    val expenseCalendar = Calendar.getInstance().apply { time = expenseDate }
+
+                    if (expenseCalendar.get(Calendar.YEAR) == currentYear && expenseCalendar.get(Calendar.MONTH) == currentMonth - 1) {
+                        currentMonthTotal += expense.eNum
+                    }
+
+                    if (expenseCalendar.get(Calendar.YEAR) == currentYear && expenseCalendar.get(Calendar.MONTH) == previousMonth - 1) {
+                        previousMonthTotal += expense.eNum
+                    }
                 }
 
-//                expenseList.forEach {
-//                    it.eDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(it.eDate).toString()
-//                }
+                // Update TextViews with the calculated totals
+                setThisMonthExpense.text = String.format("%.2f", currentMonthTotal)
+                setLastMonthExpense.text = String.format("%.2f", previousMonthTotal)
 
+                // Sort the list by descending order of expense dates
                 expenseList.sortByDescending { SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).parse(it.eDate) }
 
+                // Notify the adapter about the data change
                 dashboardAdapter.notifyDataSetChanged()
             }
             .addOnFailureListener { exception ->
@@ -275,9 +374,10 @@ class DashBoardFragment : Fragment() {
             }
     }
 
-    private fun validateInput(eName: String, eNumStr: String, eCategory: String): Boolean
+
+    private fun validateInput(eName: String, eNumStr: String, eCategory: String, eAccount: String): Boolean
     {
-        if (eName.isEmpty() || eNumStr.isEmpty()) {
+        if (eName.isEmpty() || eNumStr.isEmpty() || eAccount.isEmpty()) {
             // Show an error message for empty fields
             Toast.makeText(requireContext(), "Fields cannot be empty", Toast.LENGTH_SHORT).show()
             return false
@@ -292,6 +392,11 @@ class DashBoardFragment : Fragment() {
 
         if(eCategory == "Select Category"){
             Toast.makeText(requireContext(), "Please select a category", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        if(eAccount == "Select Account"){
+            Toast.makeText(requireContext(), "Please select an account", Toast.LENGTH_SHORT).show()
             return false
         }
 
@@ -344,9 +449,9 @@ class DashBoardFragment : Fragment() {
             val style = AlertDialog.THEME_HOLO_LIGHT
 
             datePicker = DatePickerDialog(requireContext(), style, { _, year, month, day ->
-                val formattedDate = makeDateString(day, month + 1, year)
+                val formattedDate = makeDateString(day, month, year)
                 editDateButton.text = formattedDate
-            }, year, month, day)
+            }, year, month - 1, day)
 
             // Set a listener to open the date picker when the button is clicked
             editDateButton.setOnClickListener {
