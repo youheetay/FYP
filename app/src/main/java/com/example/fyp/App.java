@@ -1,10 +1,7 @@
 package com.example.fyp;
 
 
-import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
-
 import android.app.Application;
-import android.util.Log;
 
 import com.paypal.checkout.PayPalCheckout;
 import com.paypal.checkout.config.CheckoutConfig;
@@ -18,17 +15,13 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "onCreate: Setting up PayPal SDK");
         PayPalCheckout.setConfig(new CheckoutConfig(
                 this,
-                "Aakwbag7yDJ7ZcL6KzQZhEQ42HO7muUz9V5Wg1205KYGd655GPX-nd5hDiE696CJZB7P0NiEeGj8TZf5",
+                "AVYMFOlO-xATU9gvFeKFNKnfK6y-HP53GCuRWRf5X_nHwDyjT7zqiD5e4U85bvdHdGpMQ1dOyrarAMnG",
                 Environment.SANDBOX,
                 CurrencyCode.USD,
                 UserAction.PAY_NOW,
-                "com.devshiv.paypaltestjava://paypalpay"
+                "com.example.fyp://paypalpay"
         ));
-        Log.d(TAG, "onCreate: PayPal SDK setup complete");
-
     }
-
 }
