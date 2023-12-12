@@ -18,7 +18,7 @@ class accountAdapter (private val account : ArrayList<Account>): RecyclerView.Ad
         val account : Account = account[position]
         holder.accName.text = account.accName
         holder.accCardNumber.text = account.accCardNumber.toString()
-        holder.accBalance.text = account.accCardAmount.toString()
+        holder.accBalance.text = String.format("%.2f", account.accCardAmount)
     }
 
     override fun getItemCount(): Int {

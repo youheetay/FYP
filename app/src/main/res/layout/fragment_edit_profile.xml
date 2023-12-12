@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.ProfileFragment">
-
+    tools:context=".fragments.EditProfileFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,10 +37,10 @@
                 android:background="@drawable/baseline_person_2_24"
                 android:id="@+id/profileIc"/>
 
-            <TextView
+            <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/profileName"
+                android:id="@+id/profileEditName"
                 android:layout_alignStart="@+id/profileIc"
                 android:text="Try"
                 android:layout_marginStart="50dp"
@@ -50,7 +49,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_below="@id/profileName"
+                android:layout_below="@id/profileEditName"
                 android:background="@color/white"
                 android:layout_marginTop="15dp"
                 android:id="@+id/dividerName"/>
@@ -66,7 +65,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/profileEmail"
+                android:id="@+id/profileEditEmail"
                 android:layout_alignStart="@+id/icEmail"
                 android:layout_below="@id/dividerName"
                 android:text="Try@gmail.com"
@@ -77,7 +76,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_below="@id/profileEmail"
+                android:layout_below="@id/profileEditEmail"
                 android:background="@color/white"
                 android:layout_marginTop="15dp"
                 android:id="@+id/dividerEmail"/>
@@ -90,10 +89,10 @@
                 android:layout_below="@+id/dividerEmail"
                 android:layout_marginTop="20dp"/>
 
-            <TextView
+            <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/profilePhone"
+                android:id="@+id/profileEditPhone"
                 android:layout_alignStart="@+id/icPhone"
                 android:layout_below="@id/dividerEmail"
                 android:text="01234567890"
@@ -104,7 +103,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_below="@id/profilePhone"
+                android:layout_below="@id/profileEditPhone"
                 android:background="@color/white"
                 android:layout_marginTop="15dp"
                 android:id="@+id/dividerPhone"/>
@@ -127,28 +126,45 @@
                 android:layout_marginTop="20dp"
                 android:visibility="invisible"/>
 
-            <TextView
+            <Spinner
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/profileGender"
+                android:id="@+id/profileEditGender"
                 android:layout_alignStart="@+id/icPhone"
                 android:layout_below="@id/dividerPhone"
-                android:text="Gender"
                 android:layout_marginStart="50dp"
                 android:textSize="18sp"
-                android:layout_marginTop="20dp"/>
+                android:layout_marginTop="20dp"
+                android:entries="@array/gender"/>
+
 
         </RelativeLayout>
 
 
-        <Button
-            android:layout_width="150dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Edit Profile"
-            android:layout_gravity="center"
-            android:id="@+id/editProfileBtn"/>
+            android:gravity="center">
+
+            <Button
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:text="Edit Profile"
+                android:layout_gravity="center"
+                android:layout_marginRight="15dp"
+                android:id="@+id/editProfileConfirmBtn"/>
+
+            <Button
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Cancel"
+                android:layout_marginLeft="15dp"
+                android:id="@+id/cancelEditProfileBtn"/>
+
+        </LinearLayout>
+
 
     </LinearLayout>
-
 
 </FrameLayout>

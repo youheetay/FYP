@@ -6,5 +6,7 @@ data class Expense(
     var eNum : Double = 0.00,
     var eDate : String = "",
     var eCategory : String = "",
-    var isButtonsLayoutVisible: Boolean = false
+    var isButtonsLayoutVisible: Boolean = false,
+    var accountId: String = "",
+    val userId : String? = null
 )

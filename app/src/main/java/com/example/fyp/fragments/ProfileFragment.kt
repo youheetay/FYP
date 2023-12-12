@@ -1,60 +1,97 @@
 package com.example.fyp.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.*
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import com.example.fyp.R
+import com.example.fyp.User
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.DocumentSnapshot
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [ProfileFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ProfileFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var auth: FirebaseAuth
+    private lateinit var db: FirebaseFirestore
+
+    private lateinit var profileName: TextView
+    private lateinit var profileEmail: TextView
+    private lateinit var profilePhone: TextView
+    private lateinit var profileGender: TextView
+    private lateinit var icGenderMale: ImageView
+    private lateinit var icGenderFemale: ImageView
+    private lateinit var editProfileBtn: Button
+    private lateinit var editProfileDialog: AlertDialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_profile, container, false)
+
+        auth = FirebaseAuth.getInstance()
+        db = FirebaseFirestore.getInstance()
+
+        profileName = rootView.findViewById(R.id.profileName)
+        profileEmail = rootView.findViewById(R.id.profileEmail)
+        profilePhone = rootView.findViewById(R.id.profilePhone)
+        profileGender = rootView.findViewById(R.id.profileGender)
+        icGenderMale = rootView.findViewById(R.id.icGenderMale)
+        icGenderFemale = rootView.findViewById(R.id.icGenderFemale)
+        editProfileBtn = rootView.findViewById(R.id.editProfileBtn)
+
+        // Get the current user's ID
+        val userId = auth.currentUser?.uid
+
+        // Get the reference to the user's document in Firestore
+        val userRef: DocumentReference = db.collection("users").document(userId!!)
+
+        // Retrieve data from Firestore
+        userRef.get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val document: DocumentSnapshot? = task.result
+                if (document != null && document.exists()) {
+                    val user: User = document.toObject(User::class.java)!!
+
+                    // Set data to TextViews
+                    profileName.text = user.userName
+                    profileEmail.text = user.userEmail
+                    profilePhone.text = user.userContact?.toString()
+                    profileGender.text = user.userGender
+
+                    if (user.userGender.equals("male", ignoreCase = true)) {
+                        icGenderMale.visibility = View.VISIBLE
+                        icGenderFemale.visibility = View.INVISIBLE
+                    } else if (user.userGender.equals("female", ignoreCase = true)) {
+                        icGenderMale.visibility = View.INVISIBLE
+                        icGenderFemale.visibility = View.VISIBLE
+                    }
+
+                } else {
+                    Toast.makeText(context, "Document does not exist", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(context, "Error getting document", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        editProfileBtn.setOnClickListener{
+            val fragmentTransaction: FragmentTransaction = parentFragmentManager.beginTransaction()
+            fragmentTransaction.replace(R.id.main_frame, EditProfileFragment())
+            fragmentTransaction.addToBackStack(null)
+            fragmentTransaction.commit()
+        }
+
+        return rootView
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ProfileFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ProfileFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
+
+
 }

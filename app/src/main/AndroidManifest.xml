@@ -2,7 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -11,12 +14,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FYP"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".PayPalActivity"
-            android:exported="false"
-            android:label="@string/title_activity_pay_pal"
-            android:theme="@style/Theme.FYP" />
+            android:name=".ProfileSetupActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PayActivity"
+            android:exported="false" />
         <activity
             android:name=".ResetActivity"
             android:exported="false" />
@@ -34,7 +39,7 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".insight"
             android:exported="true" />

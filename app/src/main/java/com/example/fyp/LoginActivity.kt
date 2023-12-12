@@ -21,6 +21,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
         auth = FirebaseAuth.getInstance()
+        db = FirebaseFirestore.getInstance()
 
         val userId : EditText = findViewById(R.id.username)
         val userPassword : EditText = findViewById(R.id.password)
@@ -36,9 +37,26 @@ class LoginActivity : AppCompatActivity() {
             if(email.isNotEmpty() && password.isNotEmpty()){
                 auth.signInWithEmailAndPassword(email,password).addOnCompleteListener{
                     if(it.isSuccessful){
-                        val mainIntent = Intent(this, MainActivity::class.java)
-                        startActivity(mainIntent)
-                        finish()
+                        val userId = auth.currentUser?.uid
+                        if (userId != null) {
+                            db.collection("users").document(userId)
+                                .get()
+                                .addOnSuccessListener { documentSnapshot ->
+                                    if (documentSnapshot.exists()) {
+                                        val mainIntent = Intent(this, MainActivity::class.java)
+                                        startActivity(mainIntent)
+                                        finish()
+                                    } else {
+                                        val profileSetupIntent =
+                                            Intent(this, ProfileSetupActivity::class.java)
+                                        startActivity(profileSetupIntent)
+                                        finish()
+                                    }
+                                }
+                        }
+//                        val profileSetupIntent = Intent(this, ProfileSetupActivity::class.java)
+//                        startActivity(profileSetupIntent)
+//                        finish()
                     }else{
                         Toast.makeText(this,it.exception.toString(), Toast.LENGTH_SHORT).show()
                     }
