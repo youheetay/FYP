@@ -40,7 +40,7 @@ class dashboardAdapter(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val expense: Expense = expenseList[position]
         holder.eName.text = expense.eName
-        holder.eNum.text = expense.eNum.toString()
+        holder.eNum.text = String.format("%.2f", expense.eNum)
         holder.eDate.text = expense.eDate
         holder.eCategory.text = expense.eCategory
 
