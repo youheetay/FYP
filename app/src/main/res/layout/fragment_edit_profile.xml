@@ -38,7 +38,7 @@
                 android:id="@+id/profileIc"/>
 
             <EditText
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/profileEditName"
                 android:layout_alignStart="@+id/profileIc"
@@ -90,7 +90,7 @@
                 android:layout_marginTop="20dp"/>
 
             <EditText
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/profileEditPhone"
                 android:layout_alignStart="@+id/icPhone"
