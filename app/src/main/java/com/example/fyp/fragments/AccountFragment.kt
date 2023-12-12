@@ -1,6 +1,7 @@
 package com.example.fyp.fragments
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fyp.Account
 import com.example.fyp.Expense
+import com.example.fyp.PayPalActivity
 import com.example.fyp.R
 import com.example.fyp.adapter.accountAdapter
 import com.example.fyp.adapter.dashboardAdapter
@@ -57,6 +59,8 @@ class AccountFragment : Fragment() {
         }
 
         rootView.findViewById<Button>(R.id.paypalButton).setOnClickListener{
+            val intent = Intent(requireContext(), PayPalActivity::class.java)
+            startActivity(intent)
 //            val paypalFragment = PaypalFragment()
 //            val fragmentTransaction : FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
 //            fragmentTransaction.replace(R.id.main_frame, paypalFragment)

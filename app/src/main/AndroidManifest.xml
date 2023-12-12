@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
-        android:name=".YourApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -13,6 +12,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FYP"
         tools:targetApi="31">
+        <activity
+            android:name=".PayPalActivity"
+            android:exported="false"
+            android:label="@string/title_activity_pay_pal"
+            android:theme="@style/Theme.FYP" />
         <activity
             android:name=".ResetActivity"
             android:exported="false" />
@@ -30,9 +34,7 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="true">
-
-        </activity>
+            android:exported="true"></activity>
         <activity
             android:name=".insight"
             android:exported="true" />
