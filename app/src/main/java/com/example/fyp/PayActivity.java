@@ -84,12 +84,14 @@ public class PayActivity extends AppCompatActivity {
                                 Log.d(TAG, String.format("CaptureOrderResult: %s", result));
                                 Toast.makeText(PayActivity.this, "Successful", Toast.LENGTH_SHORT).show();
 
+                                int numberSequence = Expense.Companion.getNextNumberSequence();
+
                                 // Create an Expense object with payment details
                                 Expense expense = new Expense("",
                                         "Payment",
                                         Double.parseDouble(amount.getText().toString()),
                                         getTodaysDate(),
-                                        "General",false,"",userId
+                                        "General",false,"",userId,numberSequence
                                 );
 
                                 // Store the expense in Firestore
