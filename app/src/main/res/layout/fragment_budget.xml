@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/budgetFragment"
     android:layout_width="400dp"
-    android:layout_height="match_parent"
-    tools:context=".budgetFragment">
+    android:layout_height="match_parent">
 
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"
@@ -63,8 +62,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:ems="10"
-                android:inputType="text"
-                android:textColor="#FFFFFF"
+                android:inputType="number"
+                android:textColor="#020202"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.075"
                 app:layout_constraintStart_toStartOf="parent"
@@ -75,7 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:entries="@array/budgetPeriod"
+                android:entries="@array/category"
                 android:textColor="#FFFFFF"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.027"
@@ -87,7 +86,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="Period"
+                android:text="Category"
                 android:textColor="#000000"
                 app:layout_constraintTop_toBottomOf="@+id/budgetname"
                 tools:layout_editor_absoluteX="16dp" />
@@ -96,6 +95,7 @@
                 android:id="@+id/cancelEditBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:backgroundTint="#FF0606"
                 android:src="@android:drawable/ic_menu_close_clear_cancel"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -117,6 +117,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="80dp"
                 android:layout_marginTop="8dp"
+                android:backgroundTint="#FFFFFF"
                 android:src="@drawable/baseline_delete_24"
                 app:layout_constraintStart_toEndOf="@+id/textView18"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -127,6 +128,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                android:backgroundTint="#48FF04"
                 android:src="@drawable/baseline_done_24"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"

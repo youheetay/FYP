@@ -79,8 +79,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 bottomNavigationView.setItemBackgroundResource(R.color.black)
             }
             R.id.saving -> {
-//                val toolbar : Toolbar = findViewById(R.id.toolbar)
-//                toolbar.setTitle("Saving Plan")
+                val toolbar : Toolbar = findViewById(R.id.toolbar)
+                toolbar.setTitle("Insight")
 //                setFragment(savingFragment)
 //                bottomNavigationView.setItemBackgroundResource(R.color.black)
                 val intent = Intent(this, insight::class.java)

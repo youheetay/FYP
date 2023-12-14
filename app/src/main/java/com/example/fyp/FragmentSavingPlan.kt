@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
@@ -26,12 +27,17 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class FragmentSavingPlan : Fragment() {
 
     private lateinit var budgetBtn: Button
     private lateinit var savingBtn: Button
+    private lateinit var hintTV : TextView
+    private lateinit var savingHintTV : TextView
     private lateinit var budgetList: ArrayList<Budget>
+    private lateinit var expenseList:ArrayList<Expense>
     private lateinit var savingArrayList: ArrayList<SavingPlan>
     private lateinit var recyclerView: RecyclerView
     private lateinit var savingRecycler: RecyclerView
@@ -56,6 +62,8 @@ class FragmentSavingPlan : Fragment() {
         budgetBtn = rootView.findViewById(R.id.budgetBtn)
         savingBtn = rootView.findViewById(R.id.savingBtn)
         recyclerView = rootView.findViewById(R.id.recyclerView)
+        hintTV = rootView.findViewById(R.id.hintTV)
+        savingHintTV = rootView.findViewById(R.id.savingHintTV)
         savingRecycler = rootView.findViewById(R.id.savingRecycler)
         savingTV = rootView.findViewById(R.id.savingTV)
         budgetTV = rootView.findViewById(R.id.budgetTV) // Adjust the ID accordingly
@@ -67,8 +75,9 @@ class FragmentSavingPlan : Fragment() {
 
         budgetList = arrayListOf()
         savingArrayList = arrayListOf()
+        expenseList = arrayListOf()
 
-        BudgetRecyclerAdapter = BudgetRecyclerAdapter(requireContext(), budgetList, requireContext(),LayoutInflater.from(requireContext()))
+        BudgetRecyclerAdapter = BudgetRecyclerAdapter(requireContext(), budgetList, requireContext(),expenseList)
         recyclerView.adapter = BudgetRecyclerAdapter
         SavingRecyclerAdapter = SavingRecyclerAdapter(requireContext(),savingArrayList, requireContext())
         savingRecycler.adapter = SavingRecyclerAdapter
@@ -81,7 +90,14 @@ class FragmentSavingPlan : Fragment() {
                     // Firestore collection has data, show RecyclerView
                     budgetTV.visibility = View.GONE
                     recyclerView.visibility = View.VISIBLE
-                    EventChangeListener()
+                    hintTV.visibility = View.VISIBLE
+
+                    val currentUser = FirebaseAuth.getInstance().currentUser
+                    val userId = currentUser?.uid
+                    if (userId != null) {
+                        EventChangeListener(userId)
+                    }
+//                    EventChangeListener()
 
                 } else {
 
@@ -104,12 +120,18 @@ class FragmentSavingPlan : Fragment() {
                     // Firestore collection has data, show RecyclerView
                     savingTV.visibility = View.GONE
                     savingRecycler.visibility = View.VISIBLE
-                    SavingEventChangeListener()
+                    savingHintTV.visibility = View.VISIBLE
+                    val currentUser = FirebaseAuth.getInstance().currentUser
+                    val userId = currentUser?.uid
+                    if (userId != null) {
+                        SavingEventChangeListener(userId)
+                    }
 
                 } else {
 
                     savingTV.visibility = View.VISIBLE
                     savingRecycler.visibility = View.GONE
+                    savingHintTV.visibility = View.GONE
 
 
                 }
@@ -138,6 +160,8 @@ class FragmentSavingPlan : Fragment() {
             //show dialog
             val mAlertDialog = mBuilder.show()
 
+            val currentUser = FirebaseAuth.getInstance().currentUser
+
             //login button click of custom layout
             mDialogView.findViewById<ImageButton>(R.id.savePlanBtn).setOnClickListener {
                 //dismiss dialog
@@ -149,15 +173,17 @@ class FragmentSavingPlan : Fragment() {
                 val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item,budgetPeriod)
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 spinner.adapter = adapter
-                val budgetP = spinner.selectedItem.toString()
+                val budgetC = spinner.selectedItem.toString()
                 val targetAmt =
                     mDialogView.findViewById<EditText>(R.id.targetAmount).text.toString()
+                val userId = currentUser?.uid
 
                 val budget = Budget(
                     budgetID = "",
                     budgetName = name,
-                    period = budgetP,
-                    targetAmount = targetAmt.toDoubleOrNull() // Assuming editTargetAmount is a String
+                    category = budgetC,
+                    targetAmount = targetAmt.toDoubleOrNull(), // Assuming editTargetAmount is a String
+                    userID = userId ?: "" // Set the userID
                 )
 
                 // Store the Budget object in Firestore
@@ -182,8 +208,13 @@ class FragmentSavingPlan : Fragment() {
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
+                        val userId = currentUser?.uid
+                        if (userId != null) {
+                            EventChangeListener(userId)
+                        }
 
                     }
+
 
             }
 
@@ -201,6 +232,7 @@ class FragmentSavingPlan : Fragment() {
             val mBuilder = AlertDialog.Builder(requireContext()).setView(mDialogView)
             //show dialog
             val mAlertDialog = mBuilder.show()
+            val currentUser = FirebaseAuth.getInstance().currentUser
 
             //login button click of custom layout
             mDialogView.findViewById<ImageButton>(R.id.savePlanBtn).setOnClickListener {
@@ -210,12 +242,14 @@ class FragmentSavingPlan : Fragment() {
                 val name = mDialogView.findViewById<EditText>(R.id.savingName).text.toString()
                 val targetAmt = mDialogView.findViewById<EditText>(R.id.targetAmt2).text.toString()
                 val savedAmt = mDialogView.findViewById<EditText>(R.id.savedAmount).text.toString()
+                val userId = currentUser?.uid
 
                 val savingPlan = SavingPlan(
                     savingID = "",
                     savingName = name,
                     targetAmount = targetAmt.toDoubleOrNull(), // Assuming editTargetAmount is a String
-                    savedAmount = savedAmt.toDoubleOrNull()
+                    savedAmount = savedAmt.toDoubleOrNull(),
+                    userID = userId ?: ""
                 )
 
                 // Store the Budget object in Firestore
@@ -252,60 +286,65 @@ class FragmentSavingPlan : Fragment() {
         }
     }
 
-    private fun EventChangeListener(){
+    private fun EventChangeListener(userId: String){
 
-        db = FirebaseFirestore.getInstance()
-        db.collection("budgets").addSnapshotListener(object : EventListener<QuerySnapshot> {
-            override fun onEvent(value: QuerySnapshot?, error: FirebaseFirestoreException?) {
-                if (error!= null) {
-                    Log.e("Firestore Error", error.message.toString())
-                    return
+        // Example of data retrieval in your Fragment/Activity
+        db.collection("budgets")
+            .whereEqualTo("userID", userId)
+            .get()
+            .addOnSuccessListener { result ->
+                budgetList.clear() // Clear existing data
+                for (document in result) {
+                    val budget = document.toObject(Budget::class.java)
+                    budgetList.add(budget)
                 }
 
-//                // Clear the list before adding new data
-//                budgetArrayList.clear()
-
-                //when success
-                for(dc: DocumentChange in value?.documentChanges!!){
-                    if(dc.type == DocumentChange.Type.ADDED){
-                        budgetList.add(dc.document.toObject(Budget::class.java))
-                    }
-                }
-
+                // Notify the adapter after updating the data
                 BudgetRecyclerAdapter.notifyDataSetChanged()
-
-
             }
-        })
+            .addOnFailureListener { exception ->
+                Toast.makeText(requireContext(), "Error getting data: $exception", Toast.LENGTH_SHORT).show()
+            }
 
+        // Example of data retrieval in your Fragment/Activity
+        db.collection("Expense")
+            .whereEqualTo("userId", userId)
+            .get()
+            .addOnSuccessListener { result ->
+                expenseList.clear() // Clear existing data
+                for (document in result) {
+                    val expense = document.toObject(Expense::class.java)
+                    expenseList.add(expense)
+                }
+
+                // Notify the adapter after updating the data
+                BudgetRecyclerAdapter.notifyDataSetChanged()
+            }
+            .addOnFailureListener { exception ->
+                Toast.makeText(requireContext(), "Error getting expense data: $exception", Toast.LENGTH_SHORT).show()
+            }
     }
 
-    private fun SavingEventChangeListener(){
 
-        db = FirebaseFirestore.getInstance()
-        db.collection("savings").addSnapshotListener(object : EventListener<QuerySnapshot> {
-            override fun onEvent(value: QuerySnapshot?, error: FirebaseFirestoreException?) {
-                if (error!= null) {
-                    Log.e("Firestore Error", error.message.toString())
-                    return
-                }
 
-//                // Clear the list before adding new data
-//                savingArrayList.clear()
+    private fun SavingEventChangeListener(userId: String){
 
-                //when success
-                for(dc: DocumentChange in value?.documentChanges!!){
-                    if(dc.type == DocumentChange.Type.ADDED){
-                        savingArrayList.add(dc.document.toObject(SavingPlan::class.java))
-                    }
+        // Example of data retrieval in your Fragment/Activity
+        db.collection("savings")
+            .whereEqualTo("userID", userId)
+            .get()
+            .addOnSuccessListener { result ->
+//                savingArrayList.clear() // Clear existing data
+                for (document in result) {
+                    val saving = document.toObject(SavingPlan::class.java)
+                    savingArrayList.add(saving)
                 }
 
                 SavingRecyclerAdapter.notifyDataSetChanged()
-
-
             }
-        })
-
+            .addOnFailureListener { exception ->
+                Toast.makeText(requireContext(), "Error getting data: $exception", Toast.LENGTH_SHORT).show()
+            }
     }
 
 

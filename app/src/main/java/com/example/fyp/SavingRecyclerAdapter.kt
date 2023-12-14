@@ -1,5 +1,6 @@
 package com.example.fyp
 
+import android.animation.ObjectAnimator
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -13,6 +14,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.NumberPicker
+import android.widget.ProgressBar
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -25,7 +27,10 @@ import com.mikhaellopez.circularprogressbar.CircularProgressBar
 import org.w3c.dom.Text
 
 
-class SavingRecyclerAdapter (private val context: Context, private val savingList: ArrayList<SavingPlan>, private val parentContext: Context ): RecyclerView.Adapter<SavingRecyclerAdapter.MyViewHolder>() {
+class SavingRecyclerAdapter (private val context: Context,
+                             private val savingList: ArrayList<SavingPlan>,
+                             private val parentContext: Context
+): RecyclerView.Adapter<SavingRecyclerAdapter.MyViewHolder>() {
 
 
 
@@ -40,10 +45,7 @@ class SavingRecyclerAdapter (private val context: Context, private val savingLis
 
         return MyViewHolder(itemView)
     }
-    // Inside your SavingActivity class
-    private val donutSet = mutableListOf<Float>() // Initialize as a mutable list
 
-    private val animationDuration = 1000L
 
     class MyViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         val savingName: TextView = itemView.findViewById(R.id.savingPlan)
@@ -58,6 +60,23 @@ class SavingRecyclerAdapter (private val context: Context, private val savingLis
         holder.targetAmt.text = saving.targetAmount.toString()
         holder.savedAmt.text = saving.savedAmount.toString()
 
+        // Calculate the percentage
+        val targetAmount = saving.targetAmount ?: 1.0 // Using 1.0 as a default to avoid division by zero
+        val percentage = (saving.savedAmount?.div(targetAmount))?.times(100)
+        val progressFront = holder.itemView.findViewById<ProgressBar>(R.id.progressBar2)
+        val percentageFront = percentage
+
+        // Set up an ObjectAnimator to animate the progress changes
+        val progressBarAnimator = ObjectAnimator.ofInt(progressFront, "progress", 0, percentageFront?.toInt() ?: 0)
+        progressBarAnimator.duration = 2000 // Set the duration of the animation in milliseconds
+
+        // Start the animation
+        progressBarAnimator.start()
+
+        // Set the percentage to the TextView
+        holder.itemView.findViewById<TextView>(R.id.savingPercent).text = String.format("%d%%", percentage?.toInt() ?: 0)
+
+        holder.targetAmt.visibility = View.GONE
         holder.editBtn.setOnClickListener {
 
             val positionUpdate = holder.adapterPosition
@@ -77,6 +96,22 @@ class SavingRecyclerAdapter (private val context: Context, private val savingLis
 
             alertDialogBuilder.setView(dialogView)
             val dialog = alertDialogBuilder.create() // Get the AlertDialog instance
+
+            // Calculate and set the percentage
+            val targetAmount = updateSaving.targetAmount
+            val savedAmount = updateSaving.savedAmount
+
+            if (targetAmount != null && savedAmount != null) {
+                val percentage = (savedAmount.div(targetAmount)) * 100
+
+                // Update the TextView with the percentage
+//                dialogView.findViewById<TextView>(R.id.percentageTextView).text =
+//                    String.format("%.2f%%", percentage)
+
+                // Update the CircularProgressBar
+                progress.setProgressWithAnimation(percentage.toFloat())
+                holder.itemView.findViewById<TextView>(R.id.savingPercent).text = String.format("%d%%", percentage?.toInt() ?: 0)
+            }
 
 
             dialogView.findViewById<ImageButton>(R.id.backBtn).setOnClickListener {
@@ -123,28 +158,12 @@ class SavingRecyclerAdapter (private val context: Context, private val savingLis
                     // Assuming your target amount is also a Double
                     val targetAmount = saving.targetAmount ?: 1.0  // Using 1.0 as a default to avoid division by zero
 
-                    // Calculate the progress value as a percentage
+//                     Calculate the progress value as a percentage
                     val progressValue = ((newSavedAmount?.div(targetAmount))?.times(100))?.toFloat()
                     if (progressValue != null) {
                         val progressV = progressValue
                         progress.setProgressWithAnimation(progressV)
                     }
-
-//                    // Calculate the percentage
-//                    val percentage = (saving.targetAmount?.let { it1 -> saving.savedAmount?.div(it1) })?.times(
-//                        100
-//                    )
-//
-//                    // Update the TextView with the percentage
-//                    dialog.findViewById<TextView>(R.id.percentageTextView).text =
-//                        String.format("%.2f%%", percentage)
-//
-//                    // Update the CircularProgressBar
-//                    if (percentage != null) {
-//                        holder.itemView.findViewById<CircularProgressBar>(R.id.circularProgressBar)
-//                            .setProgressWithAnimation(percentage.toFloat())
-//                    }
-
 
 
                     val db = FirebaseFirestore.getInstance()
@@ -160,11 +179,13 @@ class SavingRecyclerAdapter (private val context: Context, private val savingLis
                         .addOnSuccessListener {
                             savingList[position].savedAmount = newSavedAmount
                             notifyItemChanged(position)
+
                             Toast.makeText(
                                 holder.itemView.context,
                                 "Update Success",
                                 Toast.LENGTH_SHORT
                             ).show()
+
                         }
                         .addOnFailureListener { e ->
                             Toast.makeText(
@@ -174,11 +195,6 @@ class SavingRecyclerAdapter (private val context: Context, private val savingLis
                             ).show()
                         }
 
-//                    Toast.makeText(
-//                        holder.itemView.context,
-//                        "Insert Success",
-//                        Toast.LENGTH_SHORT
-//                    ).show()
 
                 }
                 dialog.show()
@@ -219,18 +235,13 @@ class SavingRecyclerAdapter (private val context: Context, private val savingLis
                     //dismiss dialog
                     dialog.dismiss()
 
-//                alertDialogBuilder.setPositiveButton("Update") { _, _ ->
                     val newName = nameEditText.text.toString()
                     val newTarget = targetEditText.text.toString().toDoubleOrNull() ?: 0.0
                     val newSaved = savedEditText.text.toString().toDoubleOrNull() ?: 0.0
                     val db = FirebaseFirestore.getInstance()
 
-                    updateBudgetDetails(holder, position, newName, newTarget, newSaved)
+                    updateSavingDetails(holder, position, newName, newTarget, newSaved)
 
-//                }
-//                alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
-//                    dialog.dismiss()
-//                }
                 }
 
                 dialogView.findViewById<ImageButton>(R.id.cancelBtn).setOnClickListener {
@@ -243,7 +254,7 @@ class SavingRecyclerAdapter (private val context: Context, private val savingLis
                     //dismiss dialog
                     dialog.dismiss()
 
-//              // Perform the delete operation
+                   // Perform the delete operation
                     deleteSaving(holder, position)
 
                 }
@@ -293,7 +304,7 @@ class SavingRecyclerAdapter (private val context: Context, private val savingLis
             }
     }
 
-    private fun updateBudgetDetails(
+    private fun updateSavingDetails(
         holder: SavingRecyclerAdapter.MyViewHolder,
         position: Int,
         newName: String,
