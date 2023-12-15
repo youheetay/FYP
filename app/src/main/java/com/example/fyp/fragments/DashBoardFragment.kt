@@ -77,6 +77,7 @@ class DashBoardFragment : Fragment() {
 
         recyclerView.adapter = dashboardAdapter
 
+
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser != null){
             val userId = currentUser.uid
@@ -124,8 +125,9 @@ class DashBoardFragment : Fragment() {
             val eNumStr = v.findViewById<EditText>(R.id.amountExpenseEdit).text.toString()
             val eDate = editDateButton.text.toString()
             val eCategory = spinnerCategory.selectedItem.toString()
+            val eAccount = expense.accountId
 
-            if (validateInput(eName, eNumStr, eCategory,"")) {
+            if (validateInput(eName, eNumStr, eCategory,eAccount)) {
                 val eNum = eNumStr.toDouble()
 
                 // Update the fields of the selectedExpense
@@ -186,6 +188,7 @@ class DashBoardFragment : Fragment() {
         val currentUser = FirebaseAuth.getInstance().currentUser
         val spinnerAccount = v.findViewById<Spinner>(R.id.spinnerAccount)
         val spinnerAccountValue = populateAccountSpinner(spinnerAccount)
+        val numberSequence = Expense.getNextNumberSequence()
 
         initDatePicker(v)
         dateButton = v.findViewById(R.id.datePickerBtn)
@@ -217,7 +220,8 @@ class DashBoardFragment : Fragment() {
                     eDate = eDate,
                     eCategory = eCategory,
                     userId = userId,
-                    accountId = accountId
+                    accountId = accountId,
+                    numberSequence = numberSequence
                 )
 
                 deductAmountFromAccount(accountId, eNum)
@@ -328,6 +332,7 @@ class DashBoardFragment : Fragment() {
 
 
 
+    // Update the function to take an optional sorting option
     private fun EventChangeListener(userId: String) {
         db.collection("Expense")
             .whereEqualTo("userId", userId)
@@ -359,12 +364,17 @@ class DashBoardFragment : Fragment() {
                     }
                 }
 
+                // Sort the list using a custom comparator based on date and number sequence
+                expenseList.sortWith(compareByDescending<Expense> {
+                    SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault()).parse("${it.eDate} 00:00:00")
+                        .time
+                }.thenByDescending {
+                    it.numberSequence
+                })
+
                 // Update TextViews with the calculated totals
                 setThisMonthExpense.text = String.format("%.2f", currentMonthTotal)
                 setLastMonthExpense.text = String.format("%.2f", previousMonthTotal)
-
-                // Sort the list by descending order of expense dates
-                expenseList.sortByDescending { SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).parse(it.eDate) }
 
                 // Notify the adapter about the data change
                 dashboardAdapter.notifyDataSetChanged()
@@ -373,6 +383,13 @@ class DashBoardFragment : Fragment() {
                 Toast.makeText(requireContext(), "Error getting data: $exception", Toast.LENGTH_SHORT).show()
             }
     }
+
+
+
+
+
+
+
 
 
     private fun validateInput(eName: String, eNumStr: String, eCategory: String, eAccount: String): Boolean
