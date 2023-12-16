@@ -3,6 +3,9 @@ package com.example.fyp
 import android.animation.ObjectAnimator
 import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
@@ -114,6 +117,21 @@ class BudgetRecyclerAdapter(
         // Set up an ObjectAnimator to animate the progress changes
         val progressBarAnimator = ObjectAnimator.ofInt(progressFront, "progress", 0, percentageFront?.toInt() ?: 0)
         progressBarAnimator.duration = 2000 // Set the duration of the animation in milliseconds
+
+        // Define colors for different progress ranges
+        val greenColor = Color.GREEN
+        val yellowColor = Color.YELLOW
+        val redColor = Color.RED
+
+        // Calculate the color based on the progress percentage
+        val color = when {
+//            percentageFront != null && percentageFront >= 50 -> greenColor
+            percentageFront != null && percentageFront >= 100 -> redColor
+            else -> greenColor
+        }
+
+        // Set the color filter to the ProgressBar
+        progressFront.indeterminateDrawable.colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
 
         // Start the animation
         progressBarAnimator.start()

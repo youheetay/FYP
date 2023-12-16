@@ -11,6 +11,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import com.db.williamchart.view.LineChartView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 
@@ -35,8 +36,11 @@ class ReportFragment : Fragment() {
     // Inside ReportFragment class
     private fun fetchDataFromFirestore() {
         val db = FirebaseFirestore.getInstance()
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userId = currentUser?.uid
 
         db.collection("Expense")
+            .whereEqualTo("userId", userId)
             .get()
             .addOnSuccessListener { querySnapshot ->
                 var newData = mutableListOf<Float>()
@@ -46,7 +50,7 @@ class ReportFragment : Fragment() {
                     val expenseValue = data?.get("enum") as? Double
                     val expenseFloatValue = expenseValue?.toFloat()
 
-
+                    Log.d("Firestore", "Expense value is null,  document ${document.id}")
                     if (expenseFloatValue != null) {
                         newData.add(expenseFloatValue)
                     } else {
@@ -56,7 +60,7 @@ class ReportFragment : Fragment() {
 
 
                 // Specify the maximum allowed Y value (adjust as needed)
-                val maxAllowedYValue = 15F
+                val maxAllowedYValue = 20F
 
                 // Update the line chart with the fetched data
                 updateLineChartData(newData, maxAllowedYValue)
@@ -71,11 +75,20 @@ class ReportFragment : Fragment() {
         // Make lineSet mutable
         lineSet = newData.mapIndexed { index, value -> index.toString() to value }.toMutableList()
         // Notify the line chart to update with the new data
-        updateLineChart()
+        updateLineChart(newData)
     }
 
 
-    private fun updateLineChart() {
+    private fun updateLineChart(newData: List<Float>) {
+        // Ensure the lineSet is cleared before updating
+        lineSet.clear()
+
+        newData.forEachIndexed { index, value ->
+            // Ensure all data points are above the Y-axis
+            val adjustedValue = if (value < 0) 0F else value
+            lineSet.add(index.toString() to adjustedValue)
+        }
+
         lineChart.apply {
             gradientFillColors = intArrayOf(
                 Color.parseColor("#64B5F6"),
@@ -88,6 +101,8 @@ class ReportFragment : Fragment() {
             }
         }
     }
+
+
 
 
     companion object {

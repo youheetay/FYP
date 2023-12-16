@@ -4,7 +4,10 @@ import android.animation.ObjectAnimator
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +21,7 @@ import android.widget.ProgressBar
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
@@ -64,11 +68,14 @@ class SavingRecyclerAdapter (private val context: Context,
         val targetAmount = saving.targetAmount ?: 1.0 // Using 1.0 as a default to avoid division by zero
         val percentage = (saving.savedAmount?.div(targetAmount))?.times(100)
         val progressFront = holder.itemView.findViewById<ProgressBar>(R.id.progressBar2)
+
         val percentageFront = percentage
 
         // Set up an ObjectAnimator to animate the progress changes
         val progressBarAnimator = ObjectAnimator.ofInt(progressFront, "progress", 0, percentageFront?.toInt() ?: 0)
         progressBarAnimator.duration = 2000 // Set the duration of the animation in milliseconds
+
+
 
         // Start the animation
         progressBarAnimator.start()
