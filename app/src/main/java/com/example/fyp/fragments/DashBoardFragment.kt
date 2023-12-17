@@ -46,6 +46,7 @@ class DashBoardFragment : Fragment() {
     private lateinit var setThisMonthExpense: TextView
     private lateinit var setLastMonthExpense: TextView
     private lateinit var accounts: List<Account>
+    private var numberSequence : Int = 0
 
 
     private val db = FirebaseFirestore.getInstance()
@@ -86,6 +87,10 @@ class DashBoardFragment : Fragment() {
 
         rootView.findViewById<FloatingActionButton>(R.id.createExpense).setOnClickListener{
             addExpense()
+            if (currentUser != null){
+                val userId = currentUser.uid
+                EventChangeListener(userId)
+            }
         }
 
         setThisMonthExpense = rootView.findViewById(R.id.setThisMonthExpense)
@@ -188,7 +193,10 @@ class DashBoardFragment : Fragment() {
         val currentUser = FirebaseAuth.getInstance().currentUser
         val spinnerAccount = v.findViewById<Spinner>(R.id.spinnerAccount)
         val spinnerAccountValue = populateAccountSpinner(spinnerAccount)
-        val numberSequence = Expense.getNextNumberSequence()
+        Expense.getNextNumberSequence(requireContext()) { counter ->
+            numberSequence = counter
+            // Do something with the numberSequence here
+        }
 
         initDatePicker(v)
         dateButton = v.findViewById(R.id.datePickerBtn)
@@ -213,6 +221,14 @@ class DashBoardFragment : Fragment() {
 
             if (validateInput(eName, eNumStr,eCategory,accountId)) {
                 val eNum = eNumStr.toDouble()
+
+                // Check if the account balance is sufficient
+                val selectedAccount = accounts.find { it.id == accountId }
+                if (selectedAccount != null && selectedAccount.accCardAmount < eNum) {
+                    // Show an error message if the balance is not enough
+                    Toast.makeText(requireContext(), "Insufficient balance in the selected account", Toast.LENGTH_SHORT).show()
+                    return@setButton
+                }
 
                 val expense = Expense(
                     eName = eName,
@@ -366,7 +382,8 @@ class DashBoardFragment : Fragment() {
 
                 // Sort the list using a custom comparator based on date and number sequence
                 expenseList.sortWith(compareByDescending<Expense> {
-                    SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault()).parse("${it.eDate} 00:00:00")
+                    SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault())
+                        .parse("${it.eDate} 00:00:00")
                         .time
                 }.thenByDescending {
                     it.numberSequence
@@ -449,6 +466,7 @@ class DashBoardFragment : Fragment() {
 
         // Set a listener to open the date picker when the button is clicked
         view.findViewById<Button>(R.id.datePickerBtn).setOnClickListener {
+            datePicker.datePicker.maxDate = System.currentTimeMillis()
             datePicker.show()
         }
     }
@@ -472,6 +490,7 @@ class DashBoardFragment : Fragment() {
 
             // Set a listener to open the date picker when the button is clicked
             editDateButton.setOnClickListener {
+                datePicker.datePicker.maxDate = System.currentTimeMillis()
                 datePicker.show()
             }
         }

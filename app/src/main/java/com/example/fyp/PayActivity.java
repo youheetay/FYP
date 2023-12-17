@@ -31,6 +31,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
 public class PayActivity extends AppCompatActivity {
 
     private static final String TAG = "MyTag";
@@ -78,20 +81,20 @@ public class PayActivity extends AppCompatActivity {
                         FirebaseUser currentUser = auth.getCurrentUser();
                         String userId = (currentUser != null) ? currentUser.getUid() : null;
 
-                        approval.getOrderActions().capture(new OnCaptureComplete() {
+                        Expense.Companion.getNextNumberSequence(PayActivity.this, new Function1<Integer, Unit>() {
                             @Override
-                            public void onCaptureComplete(@NotNull CaptureOrderResult result) {
-                                Log.d(TAG, String.format("CaptureOrderResult: %s", result));
-                                Toast.makeText(PayActivity.this, "Successful", Toast.LENGTH_SHORT).show();
+                            public Unit invoke(Integer counter) {
+                                int numberSequence = counter;
 
-                                int numberSequence = Expense.Companion.getNextNumberSequence();
-
+                                // Now you can use the numberSequence as needed
                                 // Create an Expense object with payment details
-                                Expense expense = new Expense("",
+                                Expense expense = new Expense(
+                                        "",
                                         "Payment",
                                         Double.parseDouble(amount.getText().toString()),
                                         getTodaysDate(),
-                                        "General",false,"",userId,numberSequence
+                                        "General", false, "",
+                                        userId, numberSequence
                                 );
 
                                 // Store the expense in Firestore
@@ -100,6 +103,8 @@ public class PayActivity extends AppCompatActivity {
                                 // Navigate back to MainActivity
                                 Intent backIntent = new Intent(PayActivity.this, MainActivity.class);
                                 startActivity(backIntent);
+
+                                return null;
                             }
                         });
                     }
@@ -136,7 +141,6 @@ public class PayActivity extends AppCompatActivity {
                     });
         }
     }
-
 
     private String getTodaysDate() {
         Calendar cal = Calendar.getInstance();

@@ -1,6 +1,10 @@
 package com.example.fyp
 
+import android.content.Context
+import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Exclude
+import com.google.firebase.firestore.FirebaseFirestore
 
 data class Expense(
     var id: String? = null,
@@ -18,14 +22,22 @@ data class Expense(
         private var counter: Int = 0
 
         // Function to get the next numberSequence
-        fun getNextNumberSequence(): Int {
-            counter++
-            return counter
-        }
+        fun getNextNumberSequence(context: Context, callback: (Int) -> Unit) {
+            val userId = FirebaseAuth.getInstance().currentUser?.uid
 
-        // Reset the counter (call this when needed, like when the app starts)
-        fun resetCounter() {
-            counter = 0
+            if (userId != null) {
+                val db = FirebaseFirestore.getInstance()
+                db.collection("Expense")
+                    .whereEqualTo("userId", userId)
+                    .get()
+                    .addOnSuccessListener { result ->
+                        counter = result.size()
+                        callback.invoke(counter)
+                    }
+                    .addOnFailureListener { exception ->
+                        Toast.makeText(context, "Invalid user ID", Toast.LENGTH_SHORT).show()
+                    }
+            }
         }
     }
 

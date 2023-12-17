@@ -20,7 +20,7 @@ import com.example.fyp.adapter.accountAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-class AccountFragment : Fragment() {
+class AccountFragment : Fragment(), accountAdapter.OnButtonClickListener {
 
     private lateinit var recyclerView : RecyclerView
     private lateinit var accountList : ArrayList<Account>
@@ -41,7 +41,7 @@ class AccountFragment : Fragment() {
 
         accountList = arrayListOf()
 
-        accountAdapter = accountAdapter(accountList)
+        accountAdapter = accountAdapter(accountList,this)
 
         recyclerView.adapter = accountAdapter
 
@@ -100,9 +100,9 @@ class AccountFragment : Fragment() {
             if(validateInput(accName,accCardNumStr,accDateStr,accCodeStr,accAmountStr)){
 
                 val accCardNum = accCardNumStr.toInt()
-                val accDate = accCardNumStr.toInt()
-                val accCode = accCardNumStr.toInt()
-                val accAmount = accCardNumStr.toDouble()
+                val accDate = accDateStr.toInt()
+                val accCode = accCodeStr.toInt()
+                val accAmount = accAmountStr.toDouble()
                 val currentUser = FirebaseAuth.getInstance().currentUser
                 val userId = currentUser?.uid
 
@@ -165,6 +165,36 @@ class AccountFragment : Fragment() {
 
 
         return true // All validation checks passed
+    }
+
+    override fun onEditButtonClick(position: Int) {
+        // Handle edit button click
+        // Implement the logic to show the edit dialog or navigate to the edit screen
+        // You can use the position parameter to get the clicked item in the list
+        Toast.makeText(requireContext(), "Edit button clicked for position $position", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDeleteButtonClick(position: Int) {
+        val accountToDelete = accountList[position]
+
+        // Perform deletion in Firestore
+        db.collection("Account")
+            .document(accountToDelete.id!!)
+            .delete()
+            .addOnSuccessListener {
+                // Successfully deleted from Firestore
+                Log.d("AccountFragment", "DocumentSnapshot successfully deleted!")
+                Toast.makeText(requireContext(), "Account deleted successfully", Toast.LENGTH_SHORT).show()
+
+                // Remove the deleted item from the local list
+                accountList.removeAt(position)
+                accountAdapter.notifyItemRemoved(position)
+            }
+            .addOnFailureListener { e ->
+                // Log error and show a toast message
+                Log.e("AccountFragment", "Error deleting document", e)
+                Toast.makeText(requireContext(), "Error deleting account", Toast.LENGTH_SHORT).show()
+            }
     }
 
 }

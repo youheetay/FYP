@@ -5,5 +5,5 @@ data class User(
     var userName: String? = null,
     var userEmail: String? = null,
     var userGender: String? = null,
-    var userContact : Int? = null
+    var userContact : String? = null
 )

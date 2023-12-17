@@ -28,6 +28,7 @@ class ProfileFragment : Fragment() {
     private lateinit var icGenderFemale: ImageView
     private lateinit var editProfileBtn: Button
     private lateinit var editProfileDialog: AlertDialog
+    private lateinit var profilePic: ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,7 +46,9 @@ class ProfileFragment : Fragment() {
         profileGender = rootView.findViewById(R.id.profileGender)
         icGenderMale = rootView.findViewById(R.id.icGenderMale)
         icGenderFemale = rootView.findViewById(R.id.icGenderFemale)
+        profilePic = rootView.findViewById(R.id.profilePic)
         editProfileBtn = rootView.findViewById(R.id.editProfileBtn)
+
 
         // Get the current user's ID
         val userId = auth.currentUser?.uid
@@ -63,16 +66,20 @@ class ProfileFragment : Fragment() {
                     // Set data to TextViews
                     profileName.text = user.userName
                     profileEmail.text = user.userEmail
-                    profilePhone.text = user.userContact?.toString()
+                    profilePhone.text = user.userContact
                     profileGender.text = user.userGender
 
                     if (user.userGender.equals("male", ignoreCase = true)) {
                         icGenderMale.visibility = View.VISIBLE
                         icGenderFemale.visibility = View.INVISIBLE
+                        profilePic.setImageResource(R.drawable.boy)
                     } else if (user.userGender.equals("female", ignoreCase = true)) {
                         icGenderMale.visibility = View.INVISIBLE
                         icGenderFemale.visibility = View.VISIBLE
+                        profilePic.setImageResource(R.drawable.girl)
                     }
+
+
 
                 } else {
                     Toast.makeText(context, "Document does not exist", Toast.LENGTH_SHORT).show()

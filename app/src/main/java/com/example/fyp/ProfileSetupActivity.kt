@@ -39,7 +39,7 @@ class ProfileSetupActivity : AppCompatActivity() {
             val contactStr = userContact.text.toString()
             val gender = userGender.selectedItem.toString()
             val userId = currentUser?.uid
-            val contact = contactStr.toInt()
+            val contact = contactStr
 
             if (userId != null) {
                 val user = User(

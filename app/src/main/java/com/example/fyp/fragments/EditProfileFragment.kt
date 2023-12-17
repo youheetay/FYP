@@ -78,7 +78,7 @@ class EditProfileFragment : Fragment() {
 
                     // Display user information in the EditText and TextView
                     editUserName.setText(user.userName)
-                    editContact.setText(user.userContact?.toString())
+                    editContact.setText(user.userContact)
                     editEmail.text = user.userEmail
 
                     // Set up gender spinner
@@ -118,7 +118,7 @@ class EditProfileFragment : Fragment() {
 
         if (validateInputs(newUsername, newPhoneStr, newGender)) {
             try {
-                val newPhone = newPhoneStr.toInt()
+                val newPhone = newPhoneStr
 
                 userRef.update(
                     mapOf(
