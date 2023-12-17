@@ -28,5 +28,16 @@
         <item>Female</item>
     </string-array>
 
+    <string-array name="sort_options">
+        <item>Date (Newest First)</item>
+        <item>Date (Oldest First)</item>
+        <item>Amount (Highest First)</item>
+        <item>Amount (Lowest First)</item>
+        <!-- Add more sorting options if needed -->
+    </string-array>
+
+    <string name="sort_prompt">Select Sorting Option</string>
+
+
 
 </resources>

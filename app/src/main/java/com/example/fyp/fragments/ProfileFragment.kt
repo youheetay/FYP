@@ -1,6 +1,7 @@
 package com.example.fyp.fragments
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import com.example.fyp.LoginActivity
 import com.example.fyp.R
 import com.example.fyp.User
 import com.google.firebase.auth.FirebaseAuth
@@ -27,6 +29,7 @@ class ProfileFragment : Fragment() {
     private lateinit var icGenderMale: ImageView
     private lateinit var icGenderFemale: ImageView
     private lateinit var editProfileBtn: Button
+    private lateinit var logoutBtn: Button
     private lateinit var editProfileDialog: AlertDialog
     private lateinit var profilePic: ImageView
 
@@ -48,6 +51,7 @@ class ProfileFragment : Fragment() {
         icGenderFemale = rootView.findViewById(R.id.icGenderFemale)
         profilePic = rootView.findViewById(R.id.profilePic)
         editProfileBtn = rootView.findViewById(R.id.editProfileBtn)
+        logoutBtn = rootView.findViewById(R.id.logoutBtn)
 
 
         // Get the current user's ID
@@ -94,6 +98,16 @@ class ProfileFragment : Fragment() {
             fragmentTransaction.replace(R.id.main_frame, EditProfileFragment())
             fragmentTransaction.addToBackStack(null)
             fragmentTransaction.commit()
+        }
+
+        logoutBtn.setOnClickListener{
+            auth.signOut()
+
+            Toast.makeText(context, "Signout successfully", Toast.LENGTH_SHORT).show()
+
+            val intent = Intent(requireContext(), LoginActivity::class.java)
+            startActivity(intent)
+            requireActivity().finish()
         }
 
         return rootView

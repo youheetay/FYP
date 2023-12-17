@@ -98,12 +98,21 @@
 
     </androidx.cardview.widget.CardView>
 
+    <Spinner
+        android:id="@+id/spinnerSort"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="70dp"
+        android:entries="@array/sort_options"
+        android:prompt="@string/sort_prompt" />
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/dashboardRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="70dp"
+        android:layout_marginTop="90dp"
         tools:listitem="@layout/list_item_dashboard">
 
     </androidx.recyclerview.widget.RecyclerView>

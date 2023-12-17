@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
@@ -79,6 +80,31 @@ class DashBoardFragment : Fragment() {
         recyclerView.adapter = dashboardAdapter
 
 
+        val spinnerSort = rootView.findViewById<Spinner>(R.id.spinnerSort)
+
+        // Set up the spinner adapter
+        ArrayAdapter.createFromResource(
+            requireContext(),
+            R.array.sort_options,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinnerSort.adapter = adapter
+        }
+
+        // Set a listener for spinner item selection
+        spinnerSort.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                // Handle the selected sorting option
+                handleSortingOption(position)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Do nothing
+            }
+        }
+
+
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser != null){
             val userId = currentUser.uid
@@ -99,6 +125,61 @@ class DashBoardFragment : Fragment() {
 
         return rootView
     }
+
+    private fun handleSortingOption(position: Int) {
+        when (position) {
+            0 -> sortByDateDescending() // Date (Newest First)
+            1 -> sortByDateAscending()  // Date (Oldest First)
+            2 -> sortByAmountDescending() // Amount (Highest First)
+            3 -> sortByAmountAscending() // Amount (Lowest First)
+            // Handle additional sorting options if needed
+        }
+    }
+
+    private fun sortByDateDescending() {
+        // Sort by date in descending order
+        expenseList.sortWith(compareByDescending<Expense> {
+            SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault())
+                .parse("${it.eDate} 00:00:00")
+                .time
+        }.thenByDescending {
+            it.numberSequence
+        })
+
+        // Notify the adapter about the data change
+        dashboardAdapter.notifyDataSetChanged()
+    }
+
+    private fun sortByDateAscending() {
+        // Sort by date in ascending order
+        expenseList.sortWith(compareBy<Expense> {
+            SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault())
+                .parse("${it.eDate} 00:00:00")
+                .time
+        }.thenBy {
+            it.numberSequence
+        })
+
+        // Notify the adapter about the data change
+        dashboardAdapter.notifyDataSetChanged()
+    }
+
+    private fun sortByAmountDescending() {
+        // Sort by amount in descending order
+        expenseList.sortByDescending { it.eNum }
+
+        // Notify the adapter about the data change
+        dashboardAdapter.notifyDataSetChanged()
+    }
+
+    private fun sortByAmountAscending() {
+        // Sort by amount in ascending order
+        expenseList.sortBy { it.eNum }
+
+        // Notify the adapter about the data change
+        dashboardAdapter.notifyDataSetChanged()
+    }
+
 
     private fun editExpense(expense : Expense) {
         val inflater = LayoutInflater.from(requireContext())
@@ -400,11 +481,6 @@ class DashBoardFragment : Fragment() {
                 Toast.makeText(requireContext(), "Error getting data: $exception", Toast.LENGTH_SHORT).show()
             }
     }
-
-
-
-
-
 
 
 

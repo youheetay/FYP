@@ -32,6 +32,7 @@ class EditProfileFragment : Fragment() {
     private lateinit var auth : FirebaseAuth
     private lateinit var icGenderMale: ImageView
     private lateinit var icGenderFemale: ImageView
+    private lateinit var profilePic: ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,6 +52,7 @@ class EditProfileFragment : Fragment() {
         cancelBtn = rootView.findViewById(R.id.cancelEditProfileBtn)
         icGenderMale = rootView.findViewById(R.id.icGenderMale)
         icGenderFemale = rootView.findViewById(R.id.icGenderFemale)
+        profilePic = rootView.findViewById(R.id.profilePicEdit)
 
         displayUserInfo()
         editBtn.setOnClickListener {
@@ -95,9 +97,11 @@ class EditProfileFragment : Fragment() {
                     if (user.userGender.equals("male", ignoreCase = true)) {
                         icGenderMale.visibility = View.VISIBLE
                         icGenderFemale.visibility = View.INVISIBLE
+                        profilePic.setImageResource(R.drawable.boy)
                     } else if (user.userGender.equals("female", ignoreCase = true)) {
                         icGenderMale.visibility = View.INVISIBLE
                         icGenderFemale.visibility = View.VISIBLE
+                        profilePic.setImageResource(R.drawable.girl)
                     }
                 } else {
                     Toast.makeText(context, "Document does not exist", Toast.LENGTH_SHORT).show()

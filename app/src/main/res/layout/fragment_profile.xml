@@ -149,6 +149,13 @@
             android:layout_gravity="center"
             android:id="@+id/editProfileBtn"/>
 
+        <Button
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="Logout"
+            android:layout_gravity="center"
+            android:id="@+id/logoutBtn"/>
+
     </LinearLayout>
 
 
