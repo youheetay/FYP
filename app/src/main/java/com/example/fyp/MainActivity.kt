@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var dashboardFragment: DashBoardFragment
     private lateinit var accountFragment: AccountFragment
     private lateinit var profileFragment: ProfileFragment
-    private lateinit var insight: insight
+    private lateinit var insight: Insights
 //    private lateinit var savingFragment: SavingFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         dashboardFragment =  DashBoardFragment()
         accountFragment =  AccountFragment()
         profileFragment =  ProfileFragment()
-        insight = insight()
+        insight = Insights()
 //        savingFragment = SavingFragment()
 
         setFragment(dashboardFragment)
@@ -81,10 +81,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.saving -> {
                 val toolbar : Toolbar = findViewById(R.id.toolbar)
                 toolbar.setTitle("Insight")
-//                setFragment(savingFragment)
-//                bottomNavigationView.setItemBackgroundResource(R.color.black)
-                val intent = Intent(this, insight::class.java)
-                startActivity(intent)
+                setFragment(insight)
+                bottomNavigationView.setItemBackgroundResource(R.color.black)
+//                val intent = Intent(this, insight::class.java)
+//                startActivity(intent)
                 true // Return true to indicate that the item click is handled
             }
             R.id.profile -> {val toolbar : Toolbar = findViewById(R.id.toolbar)
@@ -124,7 +124,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.saving ->
             {
-                SavingFragment()
+                Insights()
             }
             R.id.profile ->
             {

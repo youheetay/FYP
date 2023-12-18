@@ -111,5 +111,3 @@ class ReportFragment : Fragment() {
         private const val animationDuration = 1000L
     }
 }
-
-
