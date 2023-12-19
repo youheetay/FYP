@@ -44,6 +44,10 @@ class dashboardAdapter(
         holder.eDate.text = expense.eDate
         holder.eCategory.text = expense.eCategory
 
+        if (expense.isButtonsLayoutVisible){
+            View.GONE
+        }
+
         holder.buttonsLayout.visibility = if (expense.isButtonsLayoutVisible) View.VISIBLE else View.GONE
 
         // Add click listener to the whole card

@@ -2,8 +2,12 @@ package com.example.fyp.fragments
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -13,11 +17,14 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.PopupMenu
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -32,6 +39,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -52,9 +62,17 @@ class DashBoardFragment : Fragment() {
     private lateinit var setLastMonthExpense: TextView
     private lateinit var accounts: List<Account>
     private var numberSequence : Int = 0
+    val options = TextRecognizerOptions.Builder().build()
+    private val recognizer = TextRecognition.getClient(options)
+    private var imageBitmap: Bitmap? = null
 
 
     private val db = FirebaseFirestore.getInstance()
+    companion object {
+        const val REQUEST_CAMERA_PERMISSION = 1001
+        const val REQUEST_IMAGE_CAPTURE = 1
+        const val CAMERA = android.Manifest.permission.CAMERA
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -117,8 +135,20 @@ class DashBoardFragment : Fragment() {
             EventChangeListener(userId)
         }
 
-        rootView.findViewById<FloatingActionButton>(R.id.createExpense).setOnClickListener{
-            addExpense()
+
+        val fab = rootView.findViewById<FloatingActionButton>(R.id.createExpense)
+
+        fab.setOnClickListener{
+
+            if (hasCameraPermission()) {
+                showPopupMenu(fab)
+            } else {
+                requestCameraPermission()
+            }
+
+            //showPopupMenu(fab)
+
+            //addExpense()
             if (currentUser != null){
                 val userId = currentUser.uid
                 EventChangeListener(userId)
@@ -131,6 +161,234 @@ class DashBoardFragment : Fragment() {
 
         return rootView
     }
+
+    private fun hasCameraPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            requireContext(),
+            CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestCameraPermission() {
+        requestPermissions(
+            arrayOf(CAMERA),
+            REQUEST_CAMERA_PERMISSION
+        )
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == REQUEST_CAMERA_PERMISSION) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Camera permission granted, initiate OCR
+                initiateOCR()
+            } else {
+                // Camera permission denied, show a message or handle accordingly
+                Toast.makeText(
+                    requireContext(),
+                    "Camera permission denied. OCR cannot be performed.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    private fun showPopupMenu(view: View) {
+        val popupMenu = PopupMenu(requireContext(), view)
+        popupMenu.menuInflater.inflate(R.menu.menu_create_expense, popupMenu.menu)
+
+        popupMenu.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.menu_manual_add -> {
+                    addExpense()
+                    true
+                }
+                R.id.menu_ocr -> {
+                    initiateOCR()
+                    true
+                }
+                else -> false
+            }
+        }
+
+        popupMenu.show()
+    }
+
+    private fun initiateOCR() {
+        // Create an intent to capture an image
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+
+        // Check if there is a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(requireContext().packageManager) != null) {
+            // Start the camera intent
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+        } else {
+            // Show a message indicating that no camera app is available
+            Toast.makeText(requireContext(), "No camera app available", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == android.app.Activity.RESULT_OK) {
+            val extras: Bundle? = data?.extras
+            val imageBitmap = extras?.get("data") as Bitmap?
+
+            if (imageBitmap != null) {
+                // Set the captured image to the ImageView in the OCR card
+                val ocrImageView = view?.findViewById<ImageView>(R.id.ocrImage)
+                ocrImageView?.setImageBitmap(imageBitmap)
+
+                // Process the captured image for OCR
+                processImageForOCR(imageBitmap)
+            }
+        }
+    }
+
+    private fun processImageForOCR(bitmap: Bitmap) {
+        val image = InputImage.fromBitmap(bitmap, 0)
+
+        recognizer.process(image)
+            .addOnSuccessListener { visionText ->
+                // Process the OCR result
+                handleOCRResult(visionText.text)
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(requireContext(), "OCR failed: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun handleOCRResult(ocrText: String) {
+        val inflater = LayoutInflater.from(requireContext())
+        val v = inflater.inflate(R.layout.card_ocr, null)
+
+        val ocrDialog = AlertDialog.Builder(requireContext())
+            .setView(v)
+            .create()
+
+        val imageText = v.findViewById<TextView>(R.id.ocrText)
+        imageText.setText(ocrText)
+
+        val ocrImageView = v.findViewById<ImageView>(R.id.ocrImage)
+
+        val spinnerAccountOcr = v.findViewById<Spinner>(R.id.spinnerAccountOcr)
+        populateAccountSpinner(spinnerAccountOcr)
+
+        // Check if the imageBitmap is not null before setting it
+        if (imageBitmap != null) {
+            ocrImageView.setImageBitmap(imageBitmap)
+        }
+
+        val validNumbers = extractValidNumbers(ocrText)
+        if (validNumbers.isNotEmpty()) {
+            val totalAmount = validNumbers.sum()
+            val storeOcrBtn = v.findViewById<Button>(R.id.storeOcrBtn)
+            storeOcrBtn.visibility = View.VISIBLE
+
+            val imageNumber = v.findViewById<TextView>(R.id.ocrNumber)
+            imageNumber.text = validNumbers.joinToString(", ") // Display numbers as a comma-separated string
+
+            storeOcrBtn.setOnClickListener {
+                val selectedAccountId = getSelectedAccountId(spinnerAccountOcr)
+
+                if (selectedAccountId.isEmpty()) {
+                    Toast.makeText(requireContext(), "Please select an account", Toast.LENGTH_SHORT).show()
+                } else {
+                    // Deduct the amount from the selected account
+                    deductAmountFromAccount(selectedAccountId, totalAmount)
+
+                    // Store the OCR result in Firebase
+                    storeOCRResultInFirebase(validNumbers, totalAmount, selectedAccountId)
+                    ocrDialog.dismiss()
+                }
+            }
+        }
+        else {
+            val storeOcrBtn = v.findViewById<Button>(R.id.storeOcrBtn)
+            storeOcrBtn.visibility = View.GONE
+            // If no valid numbers are found, you can handle it accordingly
+            Toast.makeText(requireContext(), "No valid numbers found in OCR result", Toast.LENGTH_SHORT).show()
+        }
+
+        ocrDialog.show()
+    }
+
+    private fun storeOCRResultInFirebase(validNumbers: List<Double>, totalAmount: Double, selectedAccountId: String) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+
+        if (currentUser != null) {
+            val userId = currentUser.uid
+
+            // Set eDate to today's date
+            val currentDate = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Calendar.getInstance().time)
+
+            // Get the next numberSequence
+            Expense.getNextNumberSequence(requireContext()) { counter ->
+                val newExpense = Expense(
+                    eNum = totalAmount,
+                    userId = userId,
+                    eName = "General",
+                    eDate = currentDate,
+                    eCategory = "General",
+                    isButtonsLayoutVisible = false,
+                    accountId = selectedAccountId,
+                    numberSequence = counter // Set it to the next numberSequence
+                )
+
+
+                // Add the new Expense to Firestore
+                FirebaseFirestore.getInstance()
+                    .collection("Expense")
+                    .add(newExpense)
+                    .addOnSuccessListener { documentReference ->
+
+                        val documentId = documentReference.id
+
+                        db.collection("Expense")
+                            .document(documentId)
+                            .update("id", documentId)
+                            .addOnSuccessListener {
+                                Log.d("DashBoardFragment", "Document ID added successfully")
+                            }
+                            .addOnFailureListener { exception ->
+                                Log.e("DashBoardFragment", "Error adding Document ID: $exception")
+                            }
+
+                        // Update the Expense object with the document ID
+                        newExpense.id = documentId
+
+
+                        val userId = currentUser?.uid
+                        if (userId != null) {
+                            EventChangeListener(userId)
+                        }
+                        Toast.makeText(requireContext(), "OCR result added successfully", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener { e ->
+                        // Handle failure if needed
+                        Toast.makeText(requireContext(), "Error adding OCR result: $e", Toast.LENGTH_SHORT).show()
+                    }
+            }
+        }
+    }
+
+    private fun extractValidNumbers(text: String): List<Double> {
+        // Regular expression to match decimal numbers
+        val regex = """-?\d+(\.\d+)?""".toRegex()
+
+        // Find all matches in the text
+        val matches = regex.findAll(text)
+
+        // Convert matched strings to doubles and filter out null values
+        return matches.map { it.value.toDoubleOrNull() }.filterNotNull().toList()
+    }
+
 
     private fun handleSortingOption(position: Int) {
         when (position) {
@@ -219,7 +477,7 @@ class DashBoardFragment : Fragment() {
             val eCategory = spinnerCategory.selectedItem.toString()
             val eAccount = expense.accountId
 
-            if (validateInput(eName, eNumStr, eCategory,eAccount)) {
+            if (validateInput(eName, eNumStr, eCategory, eAccount)) {
                 val eNum = eNumStr.toDouble()
 
                 // Update the fields of the selectedExpense
@@ -345,7 +603,6 @@ class DashBoardFragment : Fragment() {
                                 Log.d("DashBoardFragment", "Document ID added successfully")
                             }
                             .addOnFailureListener { exception ->
-                                // Log error
                                 Log.e("DashBoardFragment", "Error adding Document ID: $exception")
                             }
 
@@ -418,9 +675,6 @@ class DashBoardFragment : Fragment() {
         return selectedAccount?.id ?: ""
     }
 
-
-
-
     private fun deductAmountFromAccount(accountId: String, expenseAmount: Double) {
         val accountRef = db.collection("Account").document(accountId)
 
@@ -433,7 +687,6 @@ class DashBoardFragment : Fragment() {
                 Log.e("DashBoardFragment", "Error deducting expense amount from account", e)
             }
     }
-
 
 
     // Update the function to take an optional sorting option
@@ -492,7 +745,6 @@ class DashBoardFragment : Fragment() {
 
 
 
-
     private fun validateInput(eName: String, eNumStr: String, eCategory: String, eAccount: String): Boolean
     {
         if (eName.isEmpty() || eNumStr.isEmpty() || eAccount.isEmpty()) {
@@ -520,7 +772,6 @@ class DashBoardFragment : Fragment() {
 
         return true // All validation checks passed
     }
-
 
     //Calendar Function
     private fun getTodaysDate(): String {
