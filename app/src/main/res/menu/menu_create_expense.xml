@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_manual_add"
+        android:title="Manual Add Expense" />
+    <item
+        android:id="@+id/menu_ocr"
+        android:title="OCR Expense" />
+</menu>
