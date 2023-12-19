@@ -22,6 +22,8 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fyp.Account
+import com.example.fyp.Budget
+import com.example.fyp.BudgetRecyclerAdapter
 import com.example.fyp.Expense
 import com.example.fyp.R
 import com.example.fyp.adapter.dashboardAdapter
@@ -43,6 +45,8 @@ class DashBoardFragment : Fragment() {
     private lateinit var recyclerView : RecyclerView
     private lateinit var expenseList : ArrayList<Expense>
     private lateinit var dashboardAdapter: dashboardAdapter
+    private lateinit var BudgetRecyclerAdapter : BudgetRecyclerAdapter
+    private lateinit var budgetList: ArrayList<Budget>
     private var selectedExpense: Expense? = null
     private lateinit var setThisMonthExpense: TextView
     private lateinit var setLastMonthExpense: TextView
@@ -64,6 +68,8 @@ class DashBoardFragment : Fragment() {
         recyclerView.setHasFixedSize(true)
 
         expenseList = arrayListOf()
+        budgetList = arrayListOf()
+        BudgetRecyclerAdapter = BudgetRecyclerAdapter(requireContext(), budgetList, requireContext(),expenseList)
 
         dashboardAdapter = dashboardAdapter(expenseList,
             onCardClickListener = { position ->
@@ -334,6 +340,7 @@ class DashBoardFragment : Fragment() {
                             .document(documentId)
                             .update("id", documentId)
                             .addOnSuccessListener {
+//                                BudgetRecyclerAdapter.notifyDataSetChanged()
                                 // Log success
                                 Log.d("DashBoardFragment", "Document ID added successfully")
                             }
@@ -476,6 +483,7 @@ class DashBoardFragment : Fragment() {
 
                 // Notify the adapter about the data change
                 dashboardAdapter.notifyDataSetChanged()
+
             }
             .addOnFailureListener { exception ->
                 Toast.makeText(requireContext(), "Error getting data: $exception", Toast.LENGTH_SHORT).show()

@@ -169,13 +169,19 @@ class FragmentSavingPlan : Fragment() {
                 //get text from EditTexts of custom layout
                 val name = mDialogView.findViewById<EditText>(R.id.budgetname).text.toString()
                 val spinner = mDialogView.findViewById<Spinner>(R.id.spinner)
-                val budgetPeriod = resources.getStringArray(R.array.budgetPeriod)
+                val budgetPeriod = resources.getStringArray(R.array.category)
                 val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item,budgetPeriod)
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 spinner.adapter = adapter
                 val budgetC = spinner.selectedItem.toString()
                 val targetAmt =
                     mDialogView.findViewById<EditText>(R.id.targetAmount).text.toString()
+
+                // Validate input fields
+                if (name.isEmpty() || targetAmt.isEmpty()) {
+                    Toast.makeText(requireContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
                 val userId = currentUser?.uid
 
                 val budget = Budget(
@@ -242,6 +248,12 @@ class FragmentSavingPlan : Fragment() {
                 val name = mDialogView.findViewById<EditText>(R.id.savingName).text.toString()
                 val targetAmt = mDialogView.findViewById<EditText>(R.id.targetAmt2).text.toString()
                 val savedAmt = mDialogView.findViewById<EditText>(R.id.savedAmount).text.toString()
+
+                // Validate input fields
+                if (name.isEmpty() || targetAmt.isEmpty() || savedAmt.isEmpty()) {
+                    Toast.makeText(requireContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
                 val userId = currentUser?.uid
 
                 val savingPlan = SavingPlan(
