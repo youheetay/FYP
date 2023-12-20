@@ -70,13 +70,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val toolbar : Toolbar = findViewById(R.id.toolbar)
                 toolbar.setTitle("Welcome")
                 setFragment(dashboardFragment)
-                bottomNavigationView.setItemBackgroundResource(R.color.black)
+                //bottomNavigationView.setItemBackgroundResource(R.color.black)
             }
             R.id.account -> {
                 val toolbar : Toolbar = findViewById(R.id.toolbar)
                 toolbar.setTitle("Wallet")
                 setFragment(accountFragment)
-                bottomNavigationView.setItemBackgroundResource(R.color.black)
+                //bottomNavigationView.setItemBackgroundResource(R.color.black)
             }
             R.id.saving -> {
                 val toolbar : Toolbar = findViewById(R.id.toolbar)
@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.profile -> {val toolbar : Toolbar = findViewById(R.id.toolbar)
                 toolbar.setTitle("Profile")
                 setFragment(profileFragment)
-                bottomNavigationView.setItemBackgroundResource(R.color.black)
+                //bottomNavigationView.setItemBackgroundResource(R.color.black)
             }
 
         }

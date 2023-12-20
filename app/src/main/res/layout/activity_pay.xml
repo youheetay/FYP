@@ -23,6 +23,16 @@
         app:paypal_button_enabled="true"
         app:paypal_button_label="pay"
         app:paypal_button_shape="rectangle"
-        app:paypal_button_size="large" />
+        app:paypal_button_size="large">
+
+    </com.paypal.checkout.paymentbutton.PaymentButtonContainer>
+
+    <Button
+        android:id="@+id/backBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="480dp"
+        android:text="Back" />
 
 </RelativeLayout>

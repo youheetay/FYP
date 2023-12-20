@@ -3,11 +3,13 @@ package com.example.fyp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.fyp.fragments.AccountFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -39,6 +41,8 @@ public class PayActivity extends AppCompatActivity {
     private static final String TAG = "MyTag";
     private PaymentButtonContainer paymentButtonContainer;
     private EditText amount;
+    private Button backButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +51,9 @@ public class PayActivity extends AppCompatActivity {
 
         paymentButtonContainer = findViewById(R.id.payment_button_container);
         amount = findViewById(R.id.payAmount);
+        backButton = findViewById(R.id.backBtn);
+
+        backButton.setOnClickListener(view -> onBackPressed());
 
         paymentButtonContainer.setup(
                 new CreateOrder() {
@@ -114,7 +121,8 @@ public class PayActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
         finish();
     }
 
