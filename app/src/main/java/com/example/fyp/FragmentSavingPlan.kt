@@ -89,7 +89,7 @@ class FragmentSavingPlan : Fragment() {
                 if (!documents.isEmpty) {
                     // Firestore collection has data, show RecyclerView
                     budgetTV.visibility = View.GONE
-                    recyclerView.visibility = View.VISIBLE
+//                    recyclerView.visibility = View.VISIBLE
                     hintTV.visibility = View.VISIBLE
 
                     val currentUser = FirebaseAuth.getInstance().currentUser
@@ -145,6 +145,17 @@ class FragmentSavingPlan : Fragment() {
         setupOnClickListenerForAddingData()
 
         return rootView
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userId = currentUser?.uid
+        if (userId != null) {
+            EventChangeListener(userId)
+            SavingEventChangeListener(userId)
+        }
     }
 
 
@@ -324,7 +335,7 @@ class FragmentSavingPlan : Fragment() {
             .whereEqualTo("userId", userId)
             .get()
             .addOnSuccessListener { result ->
-                expenseList.clear() // Clear existing data
+//                expenseList.clear() // Clear existing data
                 for (document in result) {
                     val expense = document.toObject(Expense::class.java)
                     expenseList.add(expense)
@@ -347,7 +358,7 @@ class FragmentSavingPlan : Fragment() {
             .whereEqualTo("userID", userId)
             .get()
             .addOnSuccessListener { result ->
-//                savingArrayList.clear() // Clear existing data
+                savingArrayList.clear() // Clear existing data
                 for (document in result) {
                     val saving = document.toObject(SavingPlan::class.java)
                     savingArrayList.add(saving)

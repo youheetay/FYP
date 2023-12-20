@@ -63,6 +63,7 @@
                 tools:visibility="gone" />
 
             <ScrollView
+                android:id="@+id/scrollView"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 app:layout_constraintBottom_toTopOf="@+id/budgetBtn"
@@ -78,7 +79,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     tools:listitem="@layout/budgetlist_item"
-                    tools:visibility="gone">
+                    tools:visibility="visible">
 
                 </androidx.recyclerview.widget.RecyclerView>
             </ScrollView>

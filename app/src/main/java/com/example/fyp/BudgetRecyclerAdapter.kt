@@ -1,8 +1,11 @@
 package com.example.fyp
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.app.AlertDialog
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
@@ -21,6 +24,7 @@ import android.widget.ProgressBar
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
@@ -33,9 +37,10 @@ class BudgetRecyclerAdapter(
     private val context: Context,
     private val budgetList : ArrayList<Budget>,
     private val parentContext: Context,
-    private val expenseList : ArrayList<Expense>
+    private val expenseList : ArrayList<Expense>,
 ) : RecyclerView.Adapter<BudgetRecyclerAdapter.MyViewHolder>() {
-    private var isLogicExecuted = false
+    private var previousPercentage: Double = 0.0
+    private var previousTarget: Double = 0.0
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -71,28 +76,38 @@ class BudgetRecyclerAdapter(
         Log.d("Expense", "Budget List Size: ${budgetList.size}")
 
         // Find the corresponding expense for the current budget
-        val expense = expenseList.find { it.userId == userId && it.eCategory == budget.category }
+        val expense = expenseList
+            .filter { it.userId == userId && it.eCategory == budget.category }
+            .maxByOrNull { it.numberSequence!! }
+
 
         Log.d("Expense", "Expense List Size: $expense")
+        // Define a flag to check if subtraction has been done
+        var hasSubtracted = false
 
 //        setupExpenseListener()
         // Assuming you have a list of all expenses
-        if (expense != null && !isLogicExecuted) {
-            Log.d("Expense", "Checking expense: ${expense?.eCategory}, ${expense?.userId}")
+        if (expense != null && budget.targetAmount != null) {
             // Subtract the expense amount from the target amount
-            val currentTargetAmt = budget.targetAmount
+            var currentTargetAmt = budget.targetAmount
 
             val newTargetAmt = (currentTargetAmt)?.minus((expense?.eNum!!))
+            hasSubtracted = true
+
+            val newTarget = newTargetAmt!! - previousTarget
+            previousTarget  = newTarget
+
+            budget.target = newTarget
+
             // Update the target amount TextView
-            holder.targetAmt.text = newTargetAmt.toString()
-            budget.target = newTargetAmt
+            holder.targetAmt.text = newTarget.toString()
 
             val db = FirebaseFirestore.getInstance()
             val updateBudget = budgetList[position]
             val updatedData = mapOf(
-                "target" to newTargetAmt
+                "target" to newTarget
             )
-            isLogicExecuted = true
+
 
             val documentId = updateBudget.budgetID // Use the existing document ID
 
@@ -100,53 +115,38 @@ class BudgetRecyclerAdapter(
             db.collection("budgets").document(documentId.toString())
                 .update(updatedData)
                 .addOnSuccessListener {
+
+
+                    // Reset the previousPercentage to 0 before adding the new percentage
+//                    previousPercentage = 0.0
+
+                    // Calculate the percentage after updating the target amount
+                    val percentage = calculatePercentage(budget.targetAmount, newTarget)
+
+                    // Calculate the sum of the previous percentage and the new percentage
+                    val newPercentage = previousPercentage + percentage
+
+                    // Store the current percentage for future use
+                    previousPercentage = newPercentage
+
+                    updateProgressBar(holder, newPercentage)
+
+                    // Update the target amount TextView
+                    holder.targetAmt.text = newTarget.toString()
                     // Update successful
                     Log.d("Expense", "Target amount updated successfully")
 
-                    // Update the target amount TextView
-                    holder.targetAmt.text = budget.target.toString()
+                    // Update currentTargetAmt with the latest newTarget
+                    currentTargetAmt = newTarget
+
                 }
                 .addOnFailureListener { e ->
                     // Handle failure
                     Log.e("Expense", "Error updating target amount: ${e.message}")
                 }
 
-
         }
 
-
-        val percentage = budget.targetAmount?.let { expense?.eNum?.div(it)?.times(100) }
-        val progressFront = holder.itemView.findViewById<ProgressBar>(R.id.budgetProgress)
-        val percentageFront = percentage
-
-        // Set the percentage to the TextView
-        holder.itemView.findViewById<TextView>(R.id.budgetPercentage).text = String.format("%d%%", percentage?.toInt() ?: 0)
-
-        // Set up an ObjectAnimator to animate the progress changes
-        val progressBarAnimator = ObjectAnimator.ofInt(progressFront, "progress", 0, percentageFront?.toInt() ?: 0)
-        progressBarAnimator.duration = 2000 // Set the duration of the animation in milliseconds
-
-        // Define colors for different progress ranges
-        val greenColor = Color.GREEN
-        val yellowColor = Color.YELLOW
-        val redColor = Color.RED
-
-        // Calculate the color based on the progress percentage
-        val color = when {
-//            percentageFront != null && percentageFront >= 50 -> greenColor
-            percentageFront != null && percentageFront >= 100 -> redColor
-            else -> greenColor
-        }
-
-        // Set the color filter to the ProgressBar
-        progressFront.indeterminateDrawable.colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
-
-        // Start the animation
-        progressBarAnimator.start()
-
-
-
-//        updateTargetAmt(holder,budget, expense)
 
         holder.editBtn.setOnClickListener {
             val positionUpdate = holder.adapterPosition
@@ -181,7 +181,6 @@ class BudgetRecyclerAdapter(
                 //dismiss dialog
                 dialog.dismiss()
 
-//                alertDialogBuilder.setPositiveButton("Update") { _, _ ->
                     val newName = nameEditText.text.toString()
                     val newCat = periodEditText.selectedItem.toString()
                     val newAmount = amountEditText.text.toString().toDoubleOrNull() ?: 0.0
@@ -189,10 +188,6 @@ class BudgetRecyclerAdapter(
 
                     updateBudgetDetails(holder, position, newName, newCat, newAmount)
 
-//                }
-//                alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
-//                    dialog.dismiss()
-//                }
             }
 
             dialogView.findViewById<ImageButton>(R.id.cancelEditBtn).setOnClickListener {
@@ -336,64 +331,35 @@ class BudgetRecyclerAdapter(
     }
 
 
-    // Assuming you have a listener setup method
-//    private fun setupExpenseListener() {
-//
-//        val currentUser = FirebaseAuth.getInstance().currentUser
-//        val userId = currentUser?.uid
-//        val db = FirebaseFirestore.getInstance()
-//
-//        // Add a real-time listener to the "Expense" collection
-//        db.collection("Expense")
-//            .whereEqualTo("userId", userId)
-//            .addSnapshotListener { snapshot, e ->
-//                if (e != null) {
-//                    Log.e("Expense", "Listen failed.", e)
-//                    return@addSnapshotListener
-//                }
-//
-//                if (snapshot != null && !snapshot.isEmpty) {
-//                    // Iterate through the changed documents
-//                    for (documentChange in snapshot.documentChanges) {
-//                        when (documentChange.type) {
-//                            DocumentChange.Type.ADDED, DocumentChange.Type.MODIFIED -> {
-//                                val changedExpense = documentChange.document.toObject(Expense::class.java)
-//
-//                                // Find the corresponding budget for the changed expense
-//                                val changedBudget = budgetList.find { it.category == changedExpense.eCategory }
-//
-//                                if (changedBudget != null) {
-//                                    // Subtract the expense amount from the target amount
-//                                    val currentTargetAmt = changedBudget.targetAmount
-//                                    val newTargetAmt = currentTargetAmt?.minus(changedExpense.eNum)
-//
-//                                    // Update the target amount locally
-//                                    changedBudget.targetAmount = newTargetAmt
-//
-//                                    // Update the target amount in Firestore
-//                                    changedBudget.budgetID?.let {
-//                                        db.collection("budgets").document(it)
-//                                            .update("targetAmount", newTargetAmt)
-//                                            .addOnSuccessListener {
-//                                                // Update successful
-//                                                Log.d("Expense", "Target amount updated successfully")
-//                                                // Notify your RecyclerView adapter about the data change
-//                                                BudgetRecyclerAdapter.notifyDataSetChanged()
-//                                            }
-//                                            .addOnFailureListener { updateError ->
-//                                                // Handle failure
-//                                                Log.e("Expense", "Error updating target amount: ${updateError.message}")
-//                                            }
-//                                    }
-//                                }
-//                            }
-//                            DocumentChange.Type.REMOVED -> {
-//                                // Handle removal if necessary
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//    }
+    private fun calculatePercentage(originalAmount: Double?, remainingAmount: Double?): Double {
+        if (originalAmount == null || remainingAmount == null || originalAmount <= 0) {
+            return 0.0
+        }
+        return ((originalAmount - remainingAmount) / originalAmount) * 100
+    }
+
+    private fun updateProgressBar(holder: BudgetRecyclerAdapter.MyViewHolder, percentage: Double) {
+        // Set the percentage to the TextView
+        holder.itemView.findViewById<TextView>(R.id.budgetPercentage).text = String.format("%.2f%%", percentage)
+
+        // Set up an ObjectAnimator to animate the progress changes
+        val progressFront = holder.itemView.findViewById<ProgressBar>(R.id.budgetProgress)
+        val progressBarAnimator = ObjectAnimator.ofInt(progressFront, "progress", 0, percentage.toInt())
+        progressBarAnimator.duration = 2000 // Set the duration of the animation in milliseconds
+
+
+        // Set the progress bar color based on the percentage condition
+        if (percentage != null && percentage <= 99) {
+            // Change the progress bar color to green
+            progressFront.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.green))
+        } else {
+            // Reset to the default color
+            progressFront.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.red))
+        }
+
+
+        // Start the animation
+        progressBarAnimator.start()
+    }
 
 }

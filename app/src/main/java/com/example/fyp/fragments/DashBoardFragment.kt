@@ -30,6 +30,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fyp.Account
 import com.example.fyp.Expense
+import com.example.fyp.Budget
+import com.example.fyp.BudgetRecyclerAdapter
 import com.example.fyp.R
 import com.example.fyp.adapter.dashboardAdapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -51,8 +53,11 @@ class DashBoardFragment : Fragment() {
     private lateinit var dateButton : Button
     private lateinit var editDateButton: Button
     private lateinit var recyclerView : RecyclerView
+    private lateinit var recyclerView2 : RecyclerView
     private lateinit var expenseList : ArrayList<Expense>
     private lateinit var dashboardAdapter: dashboardAdapter
+    private lateinit var BudgetRecyclerAdapter : BudgetRecyclerAdapter
+    private lateinit var budgetList: ArrayList<Budget>
     private var selectedExpense: Expense? = null
     private lateinit var setThisMonthExpense: TextView
     private lateinit var setLastMonthExpense: TextView
@@ -76,12 +81,16 @@ class DashBoardFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_dash_board, container, false)
+        val secondView = inflater.inflate(R.layout.fragment_saving_plan,container,false)
 
         recyclerView = rootView.findViewById(R.id.dashboardRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.setHasFixedSize(true)
 
         expenseList = arrayListOf()
+        budgetList = arrayListOf()
+        BudgetRecyclerAdapter = BudgetRecyclerAdapter(requireContext(), budgetList, requireContext(),expenseList)
+        recyclerView2 = secondView.findViewById(R.id.recyclerView)
 
         dashboardAdapter = dashboardAdapter(expenseList,
             onCardClickListener = { position ->
@@ -96,6 +105,7 @@ class DashBoardFragment : Fragment() {
         )
 
         recyclerView.adapter = dashboardAdapter
+        recyclerView2.adapter = BudgetRecyclerAdapter
 
 
         val spinnerSort = rootView.findViewById<Spinner>(R.id.spinnerSort)
@@ -560,6 +570,7 @@ class DashBoardFragment : Fragment() {
                 .set(expense)
                 .addOnSuccessListener {
                     Toast.makeText(requireContext(), "Expense updated successfully", Toast.LENGTH_SHORT).show()
+                    BudgetRecyclerAdapter.notifyDataSetChanged()
                     // You might want to refresh your data after an update
                     val userId = currentUser?.uid
                     if (userId != null) {
@@ -644,6 +655,7 @@ class DashBoardFragment : Fragment() {
                                 .update("id", documentId)
                                 .addOnSuccessListener {
                                     Log.d("DashBoardFragment", "Document ID added successfully")
+                                    BudgetRecyclerAdapter.notifyDataSetChanged()
                                 }
                                 .addOnFailureListener { exception ->
                                     Log.e("DashBoardFragment", "Error adding Document ID: $exception")
@@ -785,6 +797,7 @@ class DashBoardFragment : Fragment() {
 
                 // Notify the adapter about the data change
                 dashboardAdapter.notifyDataSetChanged()
+                BudgetRecyclerAdapter.notifyDataSetChanged()
             }
             .addOnFailureListener { exception ->
                 Toast.makeText(requireContext(), "Error getting data: $exception", Toast.LENGTH_SHORT).show()
