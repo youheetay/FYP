@@ -49,11 +49,11 @@
             android:id="@+id/savingPercent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="68dp"
+            android:layout_marginStart="108dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/savingAmt"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.688" />
+            app:layout_constraintVertical_bias="0.622" />
 
         <ImageButton
             android:id="@+id/editSavingButton"
@@ -82,7 +82,7 @@
             android:id="@+id/progressBar2"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="60dp"
             app:layout_constraintBottom_toBottomOf="parent"

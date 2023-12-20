@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="250dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="50dp"
         android:layout_marginEnd="16dp"
         android:background="#FFFFFF"
         android:backgroundTint="#FFFFFF"
@@ -63,7 +63,7 @@
                 tools:visibility="gone" />
 
             <ScrollView
-                android:layout_width="300dp"
+                android:layout_width="0dp"
                 android:layout_height="0dp"
                 app:layout_constraintBottom_toTopOf="@+id/budgetBtn"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -74,7 +74,7 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerView"
-                    android:layout_width="300dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     tools:listitem="@layout/budgetlist_item"
@@ -145,7 +145,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
             <ScrollView
-                android:layout_width="300dp"
+                android:layout_width="0dp"
                 android:layout_height="0dp"
                 app:layout_constraintBottom_toTopOf="@+id/savingBtn"
                 app:layout_constraintEnd_toEndOf="parent"

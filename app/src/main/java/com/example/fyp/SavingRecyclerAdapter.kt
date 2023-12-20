@@ -83,6 +83,15 @@ class SavingRecyclerAdapter (private val context: Context,
         // Set the percentage to the TextView
         holder.itemView.findViewById<TextView>(R.id.savingPercent).text = String.format("%d%%", percentage?.toInt() ?: 0)
 
+        // Set the progress bar color based on the percentage condition
+        if (percentage != null && percentage <= 99) {
+            // Change the progress bar color to green
+            progressFront.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.red))
+        } else {
+            // Reset to the default color
+            progressFront.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.green))
+        }
+
         holder.targetAmt.visibility = View.GONE
         holder.editBtn.setOnClickListener {
 
@@ -118,6 +127,14 @@ class SavingRecyclerAdapter (private val context: Context,
                 // Update the CircularProgressBar
                 progress.setProgressWithAnimation(percentage.toFloat())
                 holder.itemView.findViewById<TextView>(R.id.savingPercent).text = String.format("%d%%", percentage?.toInt() ?: 0)
+                // Set the progress bar color based on the percentage condition
+                if (percentage != null && percentage <= 99) {
+                    // Change the progress bar color to green
+                    progressFront.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.red))
+                } else {
+                    // Reset to the default color
+                    progressFront.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.green))
+                }
             }
 
 
@@ -139,9 +156,14 @@ class SavingRecyclerAdapter (private val context: Context,
 
                 val savedAmtEditText = dialogView.findViewById<EditText>(R.id.editSavedAmt)
                 val confirmBtn = dialogView.findViewById<Button>(R.id.insertBtn)
+                val backBtn = dialogView.findViewById<ImageButton>(R.id.backBtn2)
 
                 alertDialogBuilder.setView(dialogView)
                 val dialog = alertDialogBuilder.create() // Get the AlertDialog instance
+
+                backBtn.setOnClickListener {
+                    dialog.dismiss()
+                }
 
                 confirmBtn.setOnClickListener {
                     // Dismiss the second dialog
@@ -170,6 +192,14 @@ class SavingRecyclerAdapter (private val context: Context,
                     if (progressValue != null) {
                         val progressV = progressValue
                         progress.setProgressWithAnimation(progressV)
+                        // Set the progress bar color based on the percentage condition
+                        if (percentage != null && percentage <= 99) {
+                            // Change the progress bar color to green
+                            progressFront.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.red))
+                        } else {
+                            // Reset to the default color
+                            progressFront.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.green))
+                        }
                     }
 
 

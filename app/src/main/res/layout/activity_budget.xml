@@ -100,7 +100,7 @@
                 android:layout_marginTop="16dp"
                 android:ems="10"
                 android:hint="Amount"
-                android:inputType="text"
+                android:inputType="number"
                 android:textColor="#000000"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.075"
@@ -122,11 +122,12 @@
                 android:id="@+id/textView7"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="Period"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="Category"
                 android:textColor="#0E0E0E"
-                app:layout_constraintTop_toBottomOf="@+id/budgetname"
-                tools:layout_editor_absoluteX="16dp" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/budgetname" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

@@ -24,6 +24,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -71,22 +72,25 @@ class BudgetRecyclerAdapter(
 
         // Find the corresponding expense for the current budget
         val expense = expenseList.find { it.userId == userId && it.eCategory == budget.category }
+
         Log.d("Expense", "Expense List Size: $expense")
+
+//        setupExpenseListener()
         // Assuming you have a list of all expenses
         if (expense != null && !isLogicExecuted) {
-            Log.d("Expense", "Checking expense: ${expense.eCategory}, ${expense.userId}")
+            Log.d("Expense", "Checking expense: ${expense?.eCategory}, ${expense?.userId}")
             // Subtract the expense amount from the target amount
             val currentTargetAmt = budget.targetAmount
 
-            val newTargetAmt = (currentTargetAmt)?.minus((expense.eNum))
+            val newTargetAmt = (currentTargetAmt)?.minus((expense?.eNum!!))
             // Update the target amount TextView
             holder.targetAmt.text = newTargetAmt.toString()
-            budget.targetAmount = newTargetAmt
+            budget.target = newTargetAmt
 
             val db = FirebaseFirestore.getInstance()
             val updateBudget = budgetList[position]
             val updatedData = mapOf(
-                "targetAmount" to newTargetAmt
+                "target" to newTargetAmt
             )
             isLogicExecuted = true
 
@@ -100,7 +104,7 @@ class BudgetRecyclerAdapter(
                     Log.d("Expense", "Target amount updated successfully")
 
                     // Update the target amount TextView
-                    holder.targetAmt.text = budget.targetAmount.toString()
+                    holder.targetAmt.text = budget.target.toString()
                 }
                 .addOnFailureListener { e ->
                     // Handle failure
@@ -110,9 +114,13 @@ class BudgetRecyclerAdapter(
 
         }
 
+
         val percentage = budget.targetAmount?.let { expense?.eNum?.div(it)?.times(100) }
         val progressFront = holder.itemView.findViewById<ProgressBar>(R.id.budgetProgress)
         val percentageFront = percentage
+
+        // Set the percentage to the TextView
+        holder.itemView.findViewById<TextView>(R.id.budgetPercentage).text = String.format("%d%%", percentage?.toInt() ?: 0)
 
         // Set up an ObjectAnimator to animate the progress changes
         val progressBarAnimator = ObjectAnimator.ofInt(progressFront, "progress", 0, percentageFront?.toInt() ?: 0)
@@ -328,5 +336,64 @@ class BudgetRecyclerAdapter(
     }
 
 
+    // Assuming you have a listener setup method
+//    private fun setupExpenseListener() {
+//
+//        val currentUser = FirebaseAuth.getInstance().currentUser
+//        val userId = currentUser?.uid
+//        val db = FirebaseFirestore.getInstance()
+//
+//        // Add a real-time listener to the "Expense" collection
+//        db.collection("Expense")
+//            .whereEqualTo("userId", userId)
+//            .addSnapshotListener { snapshot, e ->
+//                if (e != null) {
+//                    Log.e("Expense", "Listen failed.", e)
+//                    return@addSnapshotListener
+//                }
+//
+//                if (snapshot != null && !snapshot.isEmpty) {
+//                    // Iterate through the changed documents
+//                    for (documentChange in snapshot.documentChanges) {
+//                        when (documentChange.type) {
+//                            DocumentChange.Type.ADDED, DocumentChange.Type.MODIFIED -> {
+//                                val changedExpense = documentChange.document.toObject(Expense::class.java)
+//
+//                                // Find the corresponding budget for the changed expense
+//                                val changedBudget = budgetList.find { it.category == changedExpense.eCategory }
+//
+//                                if (changedBudget != null) {
+//                                    // Subtract the expense amount from the target amount
+//                                    val currentTargetAmt = changedBudget.targetAmount
+//                                    val newTargetAmt = currentTargetAmt?.minus(changedExpense.eNum)
+//
+//                                    // Update the target amount locally
+//                                    changedBudget.targetAmount = newTargetAmt
+//
+//                                    // Update the target amount in Firestore
+//                                    changedBudget.budgetID?.let {
+//                                        db.collection("budgets").document(it)
+//                                            .update("targetAmount", newTargetAmt)
+//                                            .addOnSuccessListener {
+//                                                // Update successful
+//                                                Log.d("Expense", "Target amount updated successfully")
+//                                                // Notify your RecyclerView adapter about the data change
+//                                                BudgetRecyclerAdapter.notifyDataSetChanged()
+//                                            }
+//                                            .addOnFailureListener { updateError ->
+//                                                // Handle failure
+//                                                Log.e("Expense", "Error updating target amount: ${updateError.message}")
+//                                            }
+//                                    }
+//                                }
+//                            }
+//                            DocumentChange.Type.REMOVED -> {
+//                                // Handle removal if necessary
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//    }
 
 }
