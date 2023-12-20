@@ -72,11 +72,12 @@ class BudgetRecyclerAdapter(
 
         // Find the corresponding expense for the current budget
         val expense = expenseList.find { it.userId == userId && it.eCategory == budget.category }
+
         Log.d("Expense", "Expense List Size: $expense")
 
 //        setupExpenseListener()
         // Assuming you have a list of all expenses
-        if (expense != null || !isLogicExecuted) {
+        if (expense != null && !isLogicExecuted) {
             Log.d("Expense", "Checking expense: ${expense?.eCategory}, ${expense?.userId}")
             // Subtract the expense amount from the target amount
             val currentTargetAmt = budget.targetAmount
@@ -84,12 +85,12 @@ class BudgetRecyclerAdapter(
             val newTargetAmt = (currentTargetAmt)?.minus((expense?.eNum!!))
             // Update the target amount TextView
             holder.targetAmt.text = newTargetAmt.toString()
-            budget.targetAmount = newTargetAmt
+            budget.target = newTargetAmt
 
             val db = FirebaseFirestore.getInstance()
             val updateBudget = budgetList[position]
             val updatedData = mapOf(
-                "targetAmount" to newTargetAmt
+                "target" to newTargetAmt
             )
             isLogicExecuted = true
 
@@ -103,7 +104,7 @@ class BudgetRecyclerAdapter(
                     Log.d("Expense", "Target amount updated successfully")
 
                     // Update the target amount TextView
-                    holder.targetAmt.text = budget.targetAmount.toString()
+                    holder.targetAmt.text = budget.target.toString()
                 }
                 .addOnFailureListener { e ->
                     // Handle failure
@@ -113,9 +114,13 @@ class BudgetRecyclerAdapter(
 
         }
 
+
         val percentage = budget.targetAmount?.let { expense?.eNum?.div(it)?.times(100) }
         val progressFront = holder.itemView.findViewById<ProgressBar>(R.id.budgetProgress)
         val percentageFront = percentage
+
+        // Set the percentage to the TextView
+        holder.itemView.findViewById<TextView>(R.id.budgetPercentage).text = String.format("%d%%", percentage?.toInt() ?: 0)
 
         // Set up an ObjectAnimator to animate the progress changes
         val progressBarAnimator = ObjectAnimator.ofInt(progressFront, "progress", 0, percentageFront?.toInt() ?: 0)

@@ -29,8 +29,6 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fyp.Account
-import com.example.fyp.Budget
-import com.example.fyp.BudgetRecyclerAdapter
 import com.example.fyp.Expense
 import com.example.fyp.R
 import com.example.fyp.adapter.dashboardAdapter
@@ -55,8 +53,6 @@ class DashBoardFragment : Fragment() {
     private lateinit var recyclerView : RecyclerView
     private lateinit var expenseList : ArrayList<Expense>
     private lateinit var dashboardAdapter: dashboardAdapter
-    private lateinit var BudgetRecyclerAdapter : BudgetRecyclerAdapter
-    private lateinit var budgetList: ArrayList<Budget>
     private var selectedExpense: Expense? = null
     private lateinit var setThisMonthExpense: TextView
     private lateinit var setLastMonthExpense: TextView
@@ -86,8 +82,6 @@ class DashBoardFragment : Fragment() {
         recyclerView.setHasFixedSize(true)
 
         expenseList = arrayListOf()
-        budgetList = arrayListOf()
-        BudgetRecyclerAdapter = BudgetRecyclerAdapter(requireContext(), budgetList, requireContext(),expenseList)
 
         dashboardAdapter = dashboardAdapter(expenseList,
             onCardClickListener = { position ->
@@ -140,13 +134,7 @@ class DashBoardFragment : Fragment() {
 
         fab.setOnClickListener{
 
-            if (hasCameraPermission()) {
-                showPopupMenu(fab)
-            } else {
-                requestCameraPermission()
-            }
-
-            //showPopupMenu(fab)
+            showPopupMenu(fab)
 
             //addExpense()
             if (currentUser != null){
@@ -209,7 +197,12 @@ class DashBoardFragment : Fragment() {
                     true
                 }
                 R.id.menu_ocr -> {
-                    initiateOCR()
+                    if (hasCameraPermission()) {
+                        initiateOCR()
+                    } else {
+                        requestCameraPermission()
+                    }
+
                     true
                 }
                 else -> false
@@ -238,7 +231,7 @@ class DashBoardFragment : Fragment() {
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == android.app.Activity.RESULT_OK) {
             val extras: Bundle? = data?.extras
-            val imageBitmap = extras?.get("data") as Bitmap?
+            imageBitmap = extras?.get("data") as Bitmap?
 
             if (imageBitmap != null) {
                 // Set the captured image to the ImageView in the OCR card
@@ -246,7 +239,7 @@ class DashBoardFragment : Fragment() {
                 ocrImageView?.setImageBitmap(imageBitmap)
 
                 // Process the captured image for OCR
-                processImageForOCR(imageBitmap)
+                processImageForOCR(imageBitmap!!)
             }
         }
     }
@@ -257,14 +250,14 @@ class DashBoardFragment : Fragment() {
         recognizer.process(image)
             .addOnSuccessListener { visionText ->
                 // Process the OCR result
-                handleOCRResult(visionText.text)
+                handleOCRResult(visionText.text,imageBitmap!!)
             }
             .addOnFailureListener { e ->
                 Toast.makeText(requireContext(), "OCR failed: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
 
-    private fun handleOCRResult(ocrText: String) {
+    private fun handleOCRResult(ocrText: String, imageBitmap : Bitmap) {
         val inflater = LayoutInflater.from(requireContext())
         val v = inflater.inflate(R.layout.card_ocr, null)
 
@@ -288,32 +281,45 @@ class DashBoardFragment : Fragment() {
         val validNumbers = extractValidNumbers(ocrText)
         if (validNumbers.isNotEmpty()) {
             val totalAmount = validNumbers.sum()
-            val storeOcrBtn = v.findViewById<Button>(R.id.storeOcrBtn)
-            storeOcrBtn.visibility = View.VISIBLE
+            if (totalAmount != 0.0){
+                val storeOcrBtn = v.findViewById<Button>(R.id.storeOcrBtn)
+                storeOcrBtn.visibility = View.VISIBLE
 
-            val imageNumber = v.findViewById<TextView>(R.id.ocrNumber)
-            imageNumber.text = validNumbers.joinToString(", ") // Display numbers as a comma-separated string
+                val imageNumber = v.findViewById<TextView>(R.id.ocrNumber)
+                imageNumber.text = validNumbers.joinToString(", ") // Display numbers as a comma-separated string
 
-            storeOcrBtn.setOnClickListener {
-                val selectedAccountId = getSelectedAccountId(spinnerAccountOcr)
+                storeOcrBtn.setOnClickListener {
+                    val selectedAccountId = getSelectedAccountId(spinnerAccountOcr)
 
-                if (selectedAccountId.isEmpty()) {
-                    Toast.makeText(requireContext(), "Please select an account", Toast.LENGTH_SHORT).show()
-                } else {
-                    // Deduct the amount from the selected account
-                    deductAmountFromAccount(selectedAccountId, totalAmount)
+                    if (selectedAccountId.isEmpty()) {
+                        Toast.makeText(requireContext(), "Please select an account", Toast.LENGTH_SHORT).show()
+                    } else {
+                        // Deduct the amount from the selected account
+                        deductAmountFromAccount(selectedAccountId, totalAmount)
 
-                    // Store the OCR result in Firebase
-                    storeOCRResultInFirebase(validNumbers, totalAmount, selectedAccountId)
-                    ocrDialog.dismiss()
+                        // Store the OCR result in Firebase
+                        storeOCRResultInFirebase(validNumbers, totalAmount, selectedAccountId)
+                        ocrDialog.dismiss()
+                    }
                 }
             }
+
         }
         else {
             val storeOcrBtn = v.findViewById<Button>(R.id.storeOcrBtn)
             storeOcrBtn.visibility = View.GONE
-            // If no valid numbers are found, you can handle it accordingly
+            val retakeImageBtn = v.findViewById<Button>(R.id.retakeOcrBtn)
+            retakeImageBtn.setOnClickListener{
+                initiateOCR()
+                ocrDialog.dismiss()
+            }
             Toast.makeText(requireContext(), "No valid numbers found in OCR result", Toast.LENGTH_SHORT).show()
+        }
+
+        val retakeImageBtn = v.findViewById<Button>(R.id.retakeOcrBtn)
+        retakeImageBtn.setOnClickListener{
+            initiateOCR()
+            ocrDialog.dismiss()
         }
 
         ocrDialog.show()
@@ -479,6 +485,13 @@ class DashBoardFragment : Fragment() {
 
             if (validateInput(eName, eNumStr, eCategory, eAccount)) {
                 val eNum = eNumStr.toDouble()
+                if(expense.eNum > eNum){
+                    val amountDifference = expense.eNum - eNum
+                    updateAccountBalance(eAccount, amountDifference)
+                }else if (expense.eNum < eNum) {
+                    val amountDifference = eNum - expense.eNum
+                    updateAccountBalance(eAccount, -amountDifference)
+                }
 
                 // Update the fields of the selectedExpense
                 expense.eName = eName
@@ -499,6 +512,39 @@ class DashBoardFragment : Fragment() {
         }
         editDialog.show()
 
+    }
+
+    private fun updateAccountBalance(accountId: String, amountDifference: Double) {
+        // Fetch the current account data from Firestore
+        db.collection("Account").document(accountId).get()
+            .addOnSuccessListener { documentSnapshot ->
+                if (documentSnapshot.exists()) {
+                    val currentAccount = documentSnapshot.toObject(Account::class.java)
+
+                    if (currentAccount != null) {
+                        // Update the account balance
+                        currentAccount.accCardAmount += amountDifference
+
+                        // Update the account document in Firestore
+                        db.collection("Account").document(accountId)
+                            .set(currentAccount)
+                            .addOnSuccessListener {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Account balance updated successfully",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                            .addOnFailureListener { error ->
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Error updating account balance: $error",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                    }
+                }
+            }
     }
 
 
@@ -540,7 +586,6 @@ class DashBoardFragment : Fragment() {
         val spinnerAccountValue = populateAccountSpinner(spinnerAccount)
         Expense.getNextNumberSequence(requireContext()) { counter ->
             numberSequence = counter
-            // Do something with the numberSequence here
         }
 
         initDatePicker(v)
@@ -566,61 +611,65 @@ class DashBoardFragment : Fragment() {
 
             if (validateInput(eName, eNumStr,eCategory,accountId)) {
                 val eNum = eNumStr.toDouble()
+                if(eNum != 0.0){
+                    // Check if the account balance is sufficient
+                    val selectedAccount = accounts.find { it.id == accountId }
+                    if (selectedAccount != null && selectedAccount.accCardAmount < eNum) {
+                        // Show an error message if the balance is not enough
+                        Toast.makeText(requireContext(), "Insufficient balance in the selected account", Toast.LENGTH_SHORT).show()
+                        return@setButton
+                    }
 
-                // Check if the account balance is sufficient
-                val selectedAccount = accounts.find { it.id == accountId }
-                if (selectedAccount != null && selectedAccount.accCardAmount < eNum) {
-                    // Show an error message if the balance is not enough
-                    Toast.makeText(requireContext(), "Insufficient balance in the selected account", Toast.LENGTH_SHORT).show()
-                    return@setButton
-                }
+                    val expense = Expense(
+                        eName = eName,
+                        eNum = eNum,
+                        eDate = eDate,
+                        eCategory = eCategory,
+                        userId = userId,
+                        accountId = accountId,
+                        numberSequence = numberSequence
+                    )
 
-                val expense = Expense(
-                    eName = eName,
-                    eNum = eNum,
-                    eDate = eDate,
-                    eCategory = eCategory,
-                    userId = userId,
-                    accountId = accountId,
-                    numberSequence = numberSequence
-                )
+                    deductAmountFromAccount(accountId, eNum)
 
-                deductAmountFromAccount(accountId, eNum)
+                    db.collection("Expense")
+                        .add(expense)
+                        .addOnSuccessListener { documentReference ->
+                            // After successfully adding to Firestore, you can get the document ID
+                            val documentId = documentReference.id
 
-                db.collection("Expense")
-                    .add(expense)
-                    .addOnSuccessListener { documentReference ->
-                        // After successfully adding to Firestore, you can get the document ID
-                        val documentId = documentReference.id
+                            // Now you can update the document with the document ID
+                            db.collection("Expense")
+                                .document(documentId)
+                                .update("id", documentId)
+                                .addOnSuccessListener {
+                                    Log.d("DashBoardFragment", "Document ID added successfully")
+                                }
+                                .addOnFailureListener { exception ->
+                                    Log.e("DashBoardFragment", "Error adding Document ID: $exception")
+                                }
 
-                        // Now you can update the document with the document ID
-                        db.collection("Expense")
-                            .document(documentId)
-                            .update("id", documentId)
-                            .addOnSuccessListener {
-//                                BudgetRecyclerAdapter.notifyDataSetChanged()
-                                // Log success
-                                Log.d("DashBoardFragment", "Document ID added successfully")
+                            // Update the Expense object with the document ID
+                            expense.id = documentId
+
+                            Toast.makeText(requireContext(), "Upload Successful", Toast.LENGTH_SHORT).show()
+                            dialog.dismiss()
+
+                            val userId = currentUser?.uid
+                            if (userId != null) {
+                                EventChangeListener(userId)
                             }
-                            .addOnFailureListener { exception ->
-                                Log.e("DashBoardFragment", "Error adding Document ID: $exception")
-                            }
-
-                        // Update the Expense object with the document ID
-                        expense.id = documentId
-
-                        Toast.makeText(requireContext(), "Upload Successful", Toast.LENGTH_SHORT).show()
-                        dialog.dismiss()
-
-                        val userId = currentUser?.uid
-                        if (userId != null) {
-                            EventChangeListener(userId)
                         }
-                    }
-                    .addOnFailureListener { error ->
-                        Toast.makeText(requireContext(), error.toString(), Toast.LENGTH_SHORT).show()
-                    }
+                        .addOnFailureListener { error ->
+                            Toast.makeText(requireContext(), error.toString(), Toast.LENGTH_SHORT).show()
+                        }
+                }else{
+                    Toast.makeText(requireContext(),"Expense cannot be 0",Toast.LENGTH_SHORT).show()
+                }
             }
+
+
+
         }
 
         addDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel") { dialog, _ ->
@@ -736,7 +785,6 @@ class DashBoardFragment : Fragment() {
 
                 // Notify the adapter about the data change
                 dashboardAdapter.notifyDataSetChanged()
-
             }
             .addOnFailureListener { exception ->
                 Toast.makeText(requireContext(), "Error getting data: $exception", Toast.LENGTH_SHORT).show()
@@ -754,7 +802,7 @@ class DashBoardFragment : Fragment() {
         }
         val eNum: Double? = eNumStr.toDoubleOrNull()
 
-        if (eNum == null) {
+        if (eNum == null && eNum == 0.0) {
             // Show an error message for invalid eNum
             Toast.makeText(requireContext(), "Invalid number format for eNum", Toast.LENGTH_SHORT).show()
             return false

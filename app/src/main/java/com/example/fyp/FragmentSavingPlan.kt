@@ -189,6 +189,7 @@ class FragmentSavingPlan : Fragment() {
                     budgetName = name,
                     category = budgetC,
                     targetAmount = targetAmt.toDoubleOrNull(), // Assuming editTargetAmount is a String
+                    target = null,
                     userID = userId ?: "" // Set the userID
                 )
 

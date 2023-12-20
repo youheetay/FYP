@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -168,10 +169,71 @@ class AccountFragment : Fragment(), accountAdapter.OnButtonClickListener {
     }
 
     override fun onEditButtonClick(position: Int) {
-        // Handle edit button click
-        // Implement the logic to show the edit dialog or navigate to the edit screen
-        // You can use the position parameter to get the clicked item in the list
-        Toast.makeText(requireContext(), "Edit button clicked for position $position", Toast.LENGTH_SHORT).show()
+        val inflater = LayoutInflater.from(requireContext())
+        val v = inflater.inflate(R.layout.card_account_edit, null)
+
+        val editDialog = AlertDialog.Builder(requireContext())
+            .setView(v)
+            .setTitle("Edit Account")
+            .create()
+
+        // Get the account to be edited
+        val accountToEdit = accountList[position]
+
+        // Prefill the edit fields with existing values
+        v.findViewById<EditText>(R.id.accountNameEdit).setText(accountToEdit.accName)
+        v.findViewById<EditText>(R.id.accountCardNumEdit).setText(accountToEdit.accCardNumber.toString())
+        v.findViewById<EditText>(R.id.cardDateEdit).setText(accountToEdit.accCardDate.toString())
+        v.findViewById<EditText>(R.id.cardCodeEdit).setText(accountToEdit.accCardCode.toString())
+        v.findViewById<TextView>(R.id.accountAmountEdit).setText(accountToEdit.accCardAmount.toString())
+        val addBalanceEditText = v.findViewById<EditText>(R.id.accountAmountAddBalance)
+        addBalanceEditText.setText("0")
+
+        editDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Save") { dialog, _ ->
+            val accName = v.findViewById<EditText>(R.id.accountNameEdit).text.toString()
+            val accCardNumStr = v.findViewById<EditText>(R.id.accountCardNumEdit).text.toString()
+            val accDateStr = v.findViewById<EditText>(R.id.cardDateEdit).text.toString()
+            val accCodeStr = v.findViewById<EditText>(R.id.cardCodeEdit).text.toString()
+            val accAmountStr = v.findViewById<TextView>(R.id.accountAmountEdit).text.toString()
+            val addBalanceStr = addBalanceEditText.text.toString()
+
+            if (validateInput(accName, accCardNumStr, accDateStr, accCodeStr, accAmountStr)) {
+                val accCardNum = accCardNumStr.toInt()
+                val accDate = accDateStr.toInt()
+                val accCode = accCodeStr.toInt()
+                val accAmount = accAmountStr.toDouble()
+                val addBalance = if (addBalanceStr.isEmpty()) 0.0 else addBalanceStr.toDouble()
+
+                // Update the existing account with new values
+                accountToEdit.accName = accName
+                accountToEdit.accCardNumber = accCardNum
+                accountToEdit.accCardDate = accDate
+                accountToEdit.accCardCode = accCode
+                accountToEdit.accCardAmount = accAmount + addBalance
+
+                // Update the account in Firestore
+                db.collection("Account")
+                    .document(accountToEdit.id!!)
+                    .set(accountToEdit)
+                    .addOnSuccessListener {
+                        Toast.makeText(requireContext(), "Account updated successfully", Toast.LENGTH_SHORT).show()
+                        // Notify the adapter about the change
+                        accountAdapter.notifyItemChanged(position)
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("AccountFragment", "Error updating account", e)
+                        Toast.makeText(requireContext(), "Error updating account", Toast.LENGTH_SHORT).show()
+                    }
+
+                dialog.dismiss()
+            }
+        }
+
+        editDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        editDialog.show()
     }
 
     override fun onDeleteButtonClick(position: Int) {

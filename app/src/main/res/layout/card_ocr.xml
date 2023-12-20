@@ -36,12 +36,35 @@
             android:id="@+id/spinnerAccountOcr"
             android:layout_marginBottom="10dp"/>
 
-        <Button
-            android:id="@+id/storeOcrBtn"
-            android:text="Submit"
-            android:layout_width="250dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"/>
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/retakeOcrBtn"
+                    android:text="Retake image"
+                    android:layout_margin="10dp"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    />
+
+                <Button
+                    android:id="@+id/storeOcrBtn"
+                    android:layout_margin="10dp"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:text="Submit" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
 
     </LinearLayout>
 

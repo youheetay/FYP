@@ -41,42 +41,55 @@ class ReportFragment : Fragment() {
 
         db.collection("Expense")
             .whereEqualTo("userId", userId)
-            .get()
-            .addOnSuccessListener { querySnapshot ->
-                var newData = mutableListOf<Float>()
-
-                for (document in querySnapshot.documents) {
-                    val data = document.data
-                    val expenseValue = data?.get("enum") as? Double
-                    val expenseFloatValue = expenseValue?.toFloat()
-
-                    Log.d("Firestore", "Expense value is null,  document ${document.id}")
-                    if (expenseFloatValue != null) {
-                        newData.add(expenseFloatValue)
-                    } else {
-                        Log.d("Firestore", "Expense value is null for document ${document.id}")
-                    }
+            .addSnapshotListener { querySnapshot, e ->
+                if (e != null) {
+                    // Handle errors
+                    Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    return@addSnapshotListener
                 }
 
+                if (querySnapshot != null) {
+                    var newData = mutableListOf<Float>()
 
-                // Specify the maximum allowed Y value (adjust as needed)
-                val maxAllowedYValue = 20F
+                    for (document in querySnapshot.documents) {
+                        val data = document.data
+                        val expenseValue = data?.get("enum") as? Double
+                        val expenseFloatValue = expenseValue?.toFloat()
 
-                // Update the line chart with the fetched data
-                updateLineChartData(newData, maxAllowedYValue)
-            }
-            .addOnFailureListener { error ->
-                // Handle errors
-                Toast.makeText(requireContext(), "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+                        if (expenseFloatValue != null) {
+                            newData.add(expenseFloatValue)
+                        } else {
+                            Log.d("Firestore", "Expense value is null for document ${document.id}")
+                        }
+                    }
+
+                    // Specify the maximum allowed Y value (adjust as needed)
+                    val maxAllowedYValue = 20F
+
+                    // Update the line chart with the fetched data
+                    updateLineChartData(newData, maxAllowedYValue)
+                }
             }
     }
 
     private fun updateLineChartData(newData: List<Float>, maxYValue: Float) {
         // Make lineSet mutable
-        lineSet = newData.mapIndexed { index, value -> index.toString() to value }.toMutableList()
+        lineSet = newData.mapIndexed { index, value -> String.format("%03d", index) to value }.toMutableList()
+
+        // Sort the data by x-axis values (as strings)
+        lineSet.sortBy { it.first }
+
+        // Reverse the order of lineSet
+        lineSet.reverse()
+
         // Notify the line chart to update with the new data
         updateLineChart(newData)
     }
+
+
+
+
+
 
 
     private fun updateLineChart(newData: List<Float>) {

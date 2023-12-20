@@ -58,7 +58,7 @@
 
             <EditText
                 android:id="@+id/cardDateAdd"
-                android:hint="Expiry date"
+                android:hint="Expiry year"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:layout_width="120dp"
