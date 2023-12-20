@@ -3,7 +3,7 @@
 
     <item android:title="DashBoard"
         android:id="@+id/dashboard"
-        android:icon="@drawable/baseline_home_24" />
+        android:icon="@drawable/baseline_home_24"/>
 
     <item android:title="Account"
         android:id="@+id/account"

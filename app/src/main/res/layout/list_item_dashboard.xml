@@ -6,7 +6,8 @@
     android:layout_margin="8dp"
     app:cardCornerRadius="8dp"
     app:cardElevation="8dp"
-    android:id="@+id/list_item_dashboard">
+    android:id="@+id/list_item_dashboard"
+    app:cardBackgroundColor="@color/dashboardItem">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,12 +21,14 @@
             android:layout_margin="7dp">
 
             <TextView
+                android:textColor="@color/white"
                 android:id="@+id/expenseName"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:text="Expense Name" />
 
             <TextView
+                android:textColor="@color/white"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="category"
@@ -39,17 +42,20 @@
             android:layout_margin="7dp">
 
             <TextView
+                android:textColor="#A6A6A6"
                 android:id="@+id/expenseDate"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:text="Date" />
 
             <TextView
+                android:textColor="#A6A6A6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="RM" />
 
             <TextView
+                android:textColor="#A6A6A6"
                 android:id="@+id/expenseRM"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -5,7 +5,8 @@
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
     app:cardCornerRadius="8dp"
-    app:cardElevation="8dp">
+    app:cardElevation="8dp"
+    app:cardBackgroundColor="@color/dashboardItem">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,12 +25,14 @@
                 android:padding="16dp">
 
                 <TextView
+                    android:textColor="@color/white"
                     android:id="@+id/accountName"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="Account" />
 
                 <TextView
+                    android:textColor="#A6A6A6"
                     android:id="@+id/accountNum"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -46,6 +49,7 @@
                 android:padding="16dp">
 
                 <TextView
+                    android:textColor="@color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="Available Balance:" />
@@ -56,11 +60,13 @@
                     android:orientation="horizontal">
 
                     <TextView
+                        android:textColor="#A6A6A6"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="RM" />
 
                     <TextView
+                        android:textColor="#A6A6A6"
                         android:id="@+id/balance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

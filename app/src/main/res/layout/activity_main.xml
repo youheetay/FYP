@@ -15,6 +15,7 @@
 
 
     <com.google.android.material.navigation.NavigationView
+        android:background="@color/sidebarColor"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
@@ -22,6 +23,8 @@
         android:fitsSystemWindows="true"
         app:itemTextAppearance="@style/TextAppearance.AppCompat.Small"
         app:menu="@menu/navmenu"
-        app:headerLayout="@layout/nav_header"/>
+        app:headerLayout="@layout/nav_header"
+        app:itemTextColor="@color/white"
+        app:itemIconTint="@color/white"/>
 
 </androidx.drawerlayout.widget.DrawerLayout>

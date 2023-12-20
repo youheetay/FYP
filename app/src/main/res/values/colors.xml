@@ -1,14 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="white">#DAD3D3</color>
     <color name="red">#FF0000</color>
     <color name="blue">#FF2196F3</color>
     <color name="green">#FF4CAF50</color>
 
+    <!--
+    <color name="bottomNavColor">#353C40</color>
+    -->
+    <color name="sidebarColor">#2E3437</color>
+    <color name="bottomNavColor">#1A2029</color>
+    <color name="backgroundColor">#2B3342</color>
+    <color name="payBtnColor">#008080</color>
+
+    <!--
+    <color name="dashboardItem">#403F3E</color>
+    -->
+    <color name="dashboardItem">#1A2029</color>
+    <color name="floatingBtnColor">#FFA500</color>
+
     <color name="dashboard_color">#FF3F51B5</color>
     <color name="account_color">#FF5722</color>
-    <color name="budget_color">#FF9800</color>
+
     <color name="saving_color">#FFEB3B</color>
     <color name="profile_color">#4CAF50</color>
+
+    <color name="selectedIconColor">#353C40</color> <!-- Replace with your desired color -->
+    <color name="defaultIconColor">#FFFFFFFF</color>  <!-- Replace with your desired color -->
+
+
+
+
+
 </resources>

@@ -4,14 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.DashBoardFragment">
+    tools:context=".fragments.DashBoardFragment"
+    >
 
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardElevation="5dp"
-        android:elevation="10dp">
+        android:elevation="10dp"
+        app:cardBackgroundColor="@color/cardview_shadow_start_color">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -34,7 +36,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Expense Last Month"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/white" />
 
                 </RelativeLayout>
 
@@ -48,7 +50,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Expense This Month"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/white" />
 
                 </RelativeLayout>
 
@@ -124,6 +126,7 @@
         android:layout_gravity="bottom|right"
         android:layout_margin="30dp"
         android:clickable="true"
-        android:src="@android:drawable/ic_input_add" />
+        android:src="@android:drawable/ic_input_add"
+        android:backgroundTint="@color/floatingBtnColor"/>
 
 </FrameLayout>

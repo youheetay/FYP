@@ -32,10 +32,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        window.decorView.setBackgroundColor(resources.getColor(R.color.backgroundColor))
+
+
         val toolbar : Toolbar = findViewById(R.id.toolbar)
         toolbar.setTitle("Welcome")
 
         val drawerLayout : DrawerLayout = findViewById(R.id.drawer_layout)
+
         bottomNavigationView = findViewById(R.id.bottomNavBar)
         frameLayout = findViewById(R.id.main_frame)
 
@@ -62,6 +66,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             true
         }
 
+        bottomNavigationView.setItemBackgroundResource(R.color.bottomNavColor)
+
     }
 
     private fun handleBottomNavigation(item: MenuItem) {
@@ -70,19 +76,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val toolbar : Toolbar = findViewById(R.id.toolbar)
                 toolbar.setTitle("Welcome")
                 setFragment(dashboardFragment)
-                bottomNavigationView.setItemBackgroundResource(R.color.black)
+                //bottomNavigationView.setItemBackgroundResource(R.color.black)
             }
             R.id.account -> {
                 val toolbar : Toolbar = findViewById(R.id.toolbar)
                 toolbar.setTitle("Wallet")
                 setFragment(accountFragment)
-                bottomNavigationView.setItemBackgroundResource(R.color.black)
+                //bottomNavigationView.setItemBackgroundResource(R.color.black)
             }
             R.id.saving -> {
                 val toolbar : Toolbar = findViewById(R.id.toolbar)
                 toolbar.setTitle("Insight")
                 setFragment(insight)
-                bottomNavigationView.setItemBackgroundResource(R.color.black)
+                //bottomNavigationView.setItemBackgroundResource(R.color.black)
 //                val intent = Intent(this, insight::class.java)
 //                startActivity(intent)
                 true // Return true to indicate that the item click is handled
@@ -90,7 +96,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.profile -> {val toolbar : Toolbar = findViewById(R.id.toolbar)
                 toolbar.setTitle("Profile")
                 setFragment(profileFragment)
-                bottomNavigationView.setItemBackgroundResource(R.color.black)
+                //bottomNavigationView.setItemBackgroundResource(R.color.black)
             }
 
         }

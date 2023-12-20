@@ -83,6 +83,8 @@ class DashBoardFragment : Fragment() {
         val rootView = inflater.inflate(R.layout.fragment_dash_board, container, false)
         val secondView = inflater.inflate(R.layout.fragment_saving_plan,container,false)
 
+        rootView.setBackgroundColor(resources.getColor(R.color.backgroundColor))
+
         recyclerView = rootView.findViewById(R.id.dashboardRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.setHasFixedSize(true)
@@ -109,6 +111,7 @@ class DashBoardFragment : Fragment() {
 
 
         val spinnerSort = rootView.findViewById<Spinner>(R.id.spinnerSort)
+
 
         // Set up the spinner adapter
         ArrayAdapter.createFromResource(
@@ -678,7 +681,7 @@ class DashBoardFragment : Fragment() {
                 }else{
                     Toast.makeText(requireContext(),"Expense cannot be 0",Toast.LENGTH_SHORT).show()
                 }
-            }
+                }
 
 
 
