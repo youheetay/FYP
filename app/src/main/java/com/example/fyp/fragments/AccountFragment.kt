@@ -2,6 +2,7 @@ package com.example.fyp.fragments
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -18,6 +19,7 @@ import com.example.fyp.Account
 import com.example.fyp.PayActivity
 import com.example.fyp.R
 import com.example.fyp.adapter.accountAdapter
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -36,6 +38,8 @@ class AccountFragment : Fragment(), accountAdapter.OnButtonClickListener {
 
         val rootView = inflater.inflate(R.layout.fragment_account, container, false)
 
+        rootView.setBackgroundColor(resources.getColor(R.color.backgroundColor))
+
         recyclerView = rootView.findViewById(R.id.accountRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.setHasFixedSize(true)
@@ -52,7 +56,7 @@ class AccountFragment : Fragment(), accountAdapter.OnButtonClickListener {
             EventChangeListener(userId)
         }
 
-        rootView.findViewById<Button>(R.id.addAccountBtn).setOnClickListener{
+        rootView.findViewById<FloatingActionButton>(R.id.addAccountBtn).setOnClickListener{
             createBtn()
         }
 

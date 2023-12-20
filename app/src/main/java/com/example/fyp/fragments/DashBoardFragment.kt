@@ -77,6 +77,8 @@ class DashBoardFragment : Fragment() {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_dash_board, container, false)
 
+        rootView.setBackgroundColor(resources.getColor(R.color.backgroundColor))
+
         recyclerView = rootView.findViewById(R.id.dashboardRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.setHasFixedSize(true)
@@ -99,6 +101,7 @@ class DashBoardFragment : Fragment() {
 
 
         val spinnerSort = rootView.findViewById<Spinner>(R.id.spinnerSort)
+
 
         // Set up the spinner adapter
         ArrayAdapter.createFromResource(

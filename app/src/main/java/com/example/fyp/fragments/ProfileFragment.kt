@@ -40,6 +40,8 @@ class ProfileFragment : Fragment() {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_profile, container, false)
 
+        rootView.setBackgroundColor(resources.getColor(R.color.backgroundColor))
+
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 

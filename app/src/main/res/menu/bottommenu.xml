@@ -4,18 +4,21 @@
     <item android:title="DashBoard"
         android:id="@+id/dashboard"
         android:icon="@drawable/baseline_home_24"
-        />
+        android:tint="@color/bottom_navigation_icon_color"/>
 
     <item android:title="Account"
         android:id="@+id/account"
-        android:icon="@drawable/baseline_paid_24"/>
+        android:icon="@drawable/baseline_paid_24"
+        android:tint="@color/bottom_navigation_icon_color"/>
 
     <item android:title="Saving"
         android:id="@+id/saving"
-        android:icon="@drawable/baseline_data_exploration_24"/>
+        android:icon="@drawable/baseline_data_exploration_24"
+        android:tint="@color/bottom_navigation_icon_color"/>
 
     <item android:title="Profile"
         android:id="@+id/profile"
-        android:icon="@drawable/baseline_person_2_24"/>
+        android:icon="@drawable/baseline_person_2_24"
+        android:tint="@color/bottom_navigation_icon_color"/>
 
 </menu>
