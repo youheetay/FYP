@@ -658,7 +658,7 @@ class DashBoardFragment : Fragment() {
                                 .update("id", documentId)
                                 .addOnSuccessListener {
                                     Log.d("DashBoardFragment", "Document ID added successfully")
-                                    BudgetRecyclerAdapter.notifyDataSetChanged()
+//                                    BudgetRecyclerAdapter.notifyDataSetChanged()
                                 }
                                 .addOnFailureListener { exception ->
                                     Log.e("DashBoardFragment", "Error adding Document ID: $exception")
@@ -800,7 +800,7 @@ class DashBoardFragment : Fragment() {
 
                 // Notify the adapter about the data change
                 dashboardAdapter.notifyDataSetChanged()
-                BudgetRecyclerAdapter.notifyDataSetChanged()
+//                BudgetRecyclerAdapter.notifyDataSetChanged()
             }
             .addOnFailureListener { exception ->
                 Toast.makeText(requireContext(), "Error getting data: $exception", Toast.LENGTH_SHORT).show()

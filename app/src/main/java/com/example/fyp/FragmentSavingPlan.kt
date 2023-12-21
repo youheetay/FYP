@@ -2,33 +2,22 @@ package com.example.fyp
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.ContentProviderCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.textfield.TextInputLayout
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentChange
-import com.google.firebase.firestore.EventListener
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class FragmentSavingPlan : Fragment() {
 
@@ -43,6 +32,7 @@ class FragmentSavingPlan : Fragment() {
     private lateinit var savingRecycler: RecyclerView
     private lateinit var BudgetRecyclerAdapter: BudgetRecyclerAdapter
     private lateinit var SavingRecyclerAdapter: SavingRecyclerAdapter
+    private lateinit var swipeToRefresh : SwipeRefreshLayout
     private lateinit var savingTV: TextView
     private lateinit var budgetTV: TextView // Assuming you have a TextView for empty data
     private var db = Firebase.firestore
@@ -67,6 +57,8 @@ class FragmentSavingPlan : Fragment() {
         savingRecycler = rootView.findViewById(R.id.savingRecycler)
         savingTV = rootView.findViewById(R.id.savingTV)
         budgetTV = rootView.findViewById(R.id.budgetTV) // Adjust the ID accordingly
+        // Initialize swipeToRefresh
+        swipeToRefresh = rootView.findViewById(R.id.swipeToRefresh)
 
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.setHasFixedSize(true)
@@ -79,6 +71,7 @@ class FragmentSavingPlan : Fragment() {
 
         BudgetRecyclerAdapter = BudgetRecyclerAdapter(requireContext(), budgetList, requireContext(),expenseList)
         recyclerView.adapter = BudgetRecyclerAdapter
+        BudgetRecyclerAdapter.setSwipeRefreshLayout(swipeToRefresh)
         SavingRecyclerAdapter = SavingRecyclerAdapter(requireContext(),savingArrayList, requireContext())
         savingRecycler.adapter = SavingRecyclerAdapter
 
@@ -141,58 +134,68 @@ class FragmentSavingPlan : Fragment() {
                 Toast.makeText(requireContext(), error.toString(), Toast.LENGTH_SHORT).show()
             }
 
-
+//        refreshApp()
+        // Set up the SwipeRefreshLayout in the adapter
+        BudgetRecyclerAdapter.refreshApp()
+        refreshApp()
         setupOnClickListenerForAddingData()
 
         return rootView
     }
 
-    override fun onResume() {
-        super.onResume()
 
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userId = currentUser?.uid
-        if (userId != null) {
-            EventChangeListener(userId)
-            SavingEventChangeListener(userId)
+    private fun refreshApp() {
+        swipeToRefresh.setOnRefreshListener {
+//            for (budget in budgetList) {
+//                val expense = expenseList.find { it.eCategory == budget.category }
+//                if (expense != null) {
+//
+//                }
+//                    // Recalculate data based on budget and expense
+//                    BudgetRecyclerAdapter.calculateTargetAmt(,budget, expense)
+//                    BudgetRecyclerAdapter.updatePercentage(budget, expense)
+//                }
+            // Handle the refresh event
+            BudgetRecyclerAdapter.refreshData() // Call your specific function
+            BudgetRecyclerAdapter.notifyDataSetChanged()
+            swipeToRefresh.isRefreshing = false
         }
-    }
+
+        }
+
+
 
 
     // Function to set up OnClickListener for adding new data
     private fun setupOnClickListenerForAddingData() {
         budgetBtn.setOnClickListener {
-            
-
-            //Inflate the dialog with custom view
+            // Inflate the dialog with custom view
             val mDialogView = layoutInflater.inflate(R.layout.activity_budget, null)
-            //AlertDialogBuilder
+            // AlertDialogBuilder
             val mBuilder = AlertDialog.Builder(requireContext()).setView(mDialogView)
-            //show dialog
+            // show dialog
             val mAlertDialog = mBuilder.show()
 
             val currentUser = FirebaseAuth.getInstance().currentUser
 
-            //login button click of custom layout
+            // login button click of custom layout
             mDialogView.findViewById<ImageButton>(R.id.savePlanBtn).setOnClickListener {
-                //dismiss dialog
+                // dismiss dialog
                 mAlertDialog.dismiss()
-                //get text from EditTexts of custom layout
+                // get text from EditTexts of custom layout
                 val name = mDialogView.findViewById<EditText>(R.id.budgetname).text.toString()
                 val spinner = mDialogView.findViewById<Spinner>(R.id.spinner)
-                val budgetPeriod = resources.getStringArray(R.array.category)
-                val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item,budgetPeriod)
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                spinner.adapter = adapter
-                val budgetC = spinner.selectedItem.toString()
-                val targetAmt =
-                    mDialogView.findViewById<EditText>(R.id.targetAmount).text.toString()
 
                 // Validate input fields
-                if (name.isEmpty() || targetAmt.isEmpty()) {
+                if (name.isEmpty()) {
                     Toast.makeText(requireContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
+
+                // Retrieve the selected category from the spinner
+                val budgetC = spinner.selectedItem.toString()
+                val targetAmt = mDialogView.findViewById<EditText>(R.id.targetAmount).text.toString()
+
                 val userId = currentUser?.uid
 
                 val budget = Budget(
@@ -200,7 +203,7 @@ class FragmentSavingPlan : Fragment() {
                     budgetName = name,
                     category = budgetC,
                     targetAmount = targetAmt.toDoubleOrNull(), // Assuming editTargetAmount is a String
-                    target = null,
+                    target = targetAmt.toDoubleOrNull(),
                     userID = userId ?: "" // Set the userID
                 )
 
@@ -212,14 +215,14 @@ class FragmentSavingPlan : Fragment() {
                         val newDocumentId = documentReference.id
                         db.collection("budgets")
                             .document(newDocumentId)
-                            .update("budgetID",newDocumentId)
-                            .addOnSuccessListener{
-                            Toast.makeText(
-                                requireContext(),
-                                "Upload Successful",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }.addOnFailureListener { error ->
+                            .update("budgetID", newDocumentId)
+                            .addOnSuccessListener {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Upload Successful",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }.addOnFailureListener { error ->
                                 Toast.makeText(
                                     requireContext(),
                                     error.toString(),
@@ -232,12 +235,10 @@ class FragmentSavingPlan : Fragment() {
                         }
 
                     }
-
-
             }
 
             mDialogView.findViewById<ImageButton>(R.id.cancelPlanBtn).setOnClickListener {
-                //dismiss dialog
+                // dismiss dialog
                 mAlertDialog.dismiss()
             }
         }

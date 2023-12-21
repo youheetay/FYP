@@ -37,7 +37,7 @@ class Insights : Fragment() {
 //        setContentView(R.layout.activity_insight)
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_insights, container, false)
-        val toolbar: Toolbar = rootView.findViewById(R.id.toolbar)
+//        val toolbar: Toolbar = rootView.findViewById(R.id.toolbar)
 
         tabLayout1 = rootView.findViewById(R.id.tab_layout_Home)
         viewPagerHome = rootView.findViewById(R.id.view_pager2)
@@ -48,7 +48,7 @@ class Insights : Fragment() {
         profileFragment = ProfileFragment()
         insights = Insights()
 
-        val bottomNavigationView = rootView.findViewById<BottomNavigationView>(R.id.bottomNavBar)
+//        val bottomNavigationView = rootView.findViewById<BottomNavigationView>(R.id.bottomNavBar)
         //tabLayout.setupWithViewPager(viewPager2)
 
         tabLayout1.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -73,49 +73,47 @@ class Insights : Fragment() {
             }
         })
 
-        // Set up a listener for item clicks
-        bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
-            // Inside your bottomNavigationView.setOnNavigationItemSelectedListener block
-            when (menuItem.itemId) {
-                R.id.dashboard -> {
-                    Log.d("Insight", "Setting fragment: $dashboardFragment")
-                    val toolbar: Toolbar = rootView.findViewById(R.id.toolbar)
-                    toolbar.setTitle("Welcome")
-                    setFragment(dashboardFragment)
-                    true
-                }
-
-                R.id.account -> {
-                    Log.d("Insight", "Setting fragment: $accountFragment")
-                    val toolbar: Toolbar = rootView.findViewById(R.id.toolbar)
-                    toolbar.setTitle("Wallet")
-                    setFragment(accountFragment)
-                    bottomNavigationView.setItemBackgroundResource(R.color.black)
-                    true
-                }
-
-                R.id.saving -> {
-                    val toolbar: Toolbar = rootView.findViewById(R.id.toolbar)
-                    toolbar.setTitle("Insight")
-                    setFragment(insights)
-                    bottomNavigationView.setItemBackgroundResource(R.color.black)
-//                    val intent = Intent(this, insight::class.java)
-//                    startActivity(intent)
-                    true // Return true to indicate that the item click is handled
-                }
-
-                R.id.profile -> {
-                    val toolbar: Toolbar = rootView.findViewById(R.id.toolbar)
-                    toolbar.setTitle("Profile")
-                    setFragment(profileFragment)
-                    bottomNavigationView.setItemBackgroundResource(R.color.black)
-                    true
-                }
-
-                else -> false // Return false for items that are not handled
-            }
-
-        }
+//        // Set up a listener for item clicks
+//        bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
+//            // Inside your bottomNavigationView.setOnNavigationItemSelectedListener block
+//            when (menuItem.itemId) {
+//                R.id.dashboard -> {
+//                    Log.d("Insight", "Setting fragment: $dashboardFragment")
+//                    val toolbar: Toolbar = rootView.findViewById(R.id.toolbar)
+//                    toolbar.setTitle("Welcome")
+//                    setFragment(dashboardFragment)
+//                    true
+//                }
+//
+//                R.id.account -> {
+//                    Log.d("Insight", "Setting fragment: $accountFragment")
+//                    val toolbar: Toolbar = rootView.findViewById(R.id.toolbar)
+//                    toolbar.setTitle("Wallet")
+//                    setFragment(accountFragment)
+//                    true
+//                }
+//
+//                R.id.saving -> {
+//                    val toolbar: Toolbar = rootView.findViewById(R.id.toolbar)
+//                    toolbar.setTitle("Insight")
+//                    setFragment(insights)
+//
+////                    val intent = Intent(this, insight::class.java)
+////                    startActivity(intent)
+//                    true // Return true to indicate that the item click is handled
+//                }
+//
+//                R.id.profile -> {
+//                    val toolbar: Toolbar = rootView.findViewById(R.id.toolbar)
+//                    toolbar.setTitle("Profile")
+//                    setFragment(profileFragment)
+//                    true
+//                }
+//
+//                else -> false // Return false for items that are not handled
+//            }
+//
+//        }
 
         return rootView
     }

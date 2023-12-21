@@ -72,6 +72,7 @@ dependencies {
     implementation 'com.mikhaellopez:circularprogressbar:3.1.0'
     implementation 'com.google.android.gms:play-services-mlkit-text-recognition-common:19.0.0'
     implementation 'com.google.android.gms:play-services-mlkit-text-recognition:19.0.0'
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
 
     implementation 'com.paypal.checkout:android-sdk:1.1.0'

@@ -7,7 +7,9 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="500dp" >
+        android:layout_height="500dp"
+        android:background="@color/dashboardItem"
+        android:backgroundTint="@color/dashboardItem">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -15,8 +17,10 @@
 
             <ImageButton
                 android:id="@+id/backBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="32dp"
+                android:layout_height="33dp"
+                android:background="@color/dashboardItem"
+                android:backgroundTint="@color/dashboardItem"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/baseline_arrow_back_24" />
@@ -28,6 +32,7 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="10dp"
                 android:text="Plan Details"
+                android:textColor="#FFFDFD"
                 app:layout_constraintStart_toEndOf="@+id/backBtn"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -35,6 +40,7 @@
                 android:id="@+id/editSavingBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:backgroundTint="@color/dashboardItem"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toEndOf="@+id/textView10"
@@ -84,6 +90,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="Saved Amount"
+                android:textColor="#FFFFFF"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.481"
                 app:layout_constraintStart_toStartOf="parent"
@@ -96,6 +103,7 @@
                 android:layout_marginStart="160dp"
                 android:layout_marginTop="8dp"
                 android:text="RM"
+                android:textColor="#FFFFFF"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView17" />
 
@@ -105,6 +113,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                android:textColor="#FFFCFC"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.072"
                 app:layout_constraintStart_toEndOf="@+id/textView19"
@@ -114,6 +123,7 @@
                 android:id="@+id/percentageTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
                 app:layout_constraintBottom_toBottomOf="@+id/circularProgressBar"
                 app:layout_constraintEnd_toEndOf="@+id/circularProgressBar"
                 app:layout_constraintStart_toStartOf="@+id/circularProgressBar"

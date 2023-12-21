@@ -17,12 +17,12 @@
                 android:id="@+id/cancelBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:backgroundTint="#FFFFFF"
+                android:backgroundTint="@color/dashboardItem"
                 android:foregroundTint="#FFFFFF"
-                android:tint="#000000"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/btn_clear" />
+                app:srcCompat="@android:drawable/ic_menu_close_clear_cancel"
+                app:tint="#FFFFFF" />
 
             <TextView
                 android:id="@+id/textView20"
@@ -51,7 +51,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="1dp"
-                android:backgroundTint="#FFFFFF"
+                android:backgroundTint="@color/dashboardItem"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/dltSavingBtn"
