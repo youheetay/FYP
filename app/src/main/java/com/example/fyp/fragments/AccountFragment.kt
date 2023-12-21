@@ -161,35 +161,40 @@ class AccountFragment : Fragment(), accountAdapter.OnButtonClickListener {
         addDialog.show()
     }
 
-    private fun validateInput(accName: String, accCardNumber: String, accDate : String, accCode : String, accAmount : String): Boolean
-    {
+    private fun validateInput(accName: String, accCardNumber: String, accDate: String, accCode: String, accAmount: String): Boolean {
         if (accName.isEmpty() || accCardNumber.isEmpty() || accDate.isEmpty() || accCode.isEmpty() || accAmount.isEmpty()) {
             // Show an error message for empty fields
             Toast.makeText(requireContext(), "Fields cannot be empty", Toast.LENGTH_SHORT).show()
             return false
         }
 
-        if(!accCardNumber.isDigitsOnly() || accCardNumber.length != 16){
+        if (!accCardNumber.isDigitsOnly() || accCardNumber.length != 16) {
             Toast.makeText(requireContext(), "Invalid format for card number", Toast.LENGTH_SHORT).show()
             return false
         }
-        if(!accDate.isDigitsOnly() || accDate.length != 4){
+
+        if (!accDate.isDigitsOnly() || accDate.length != 4) {
             Toast.makeText(requireContext(), "Invalid format for year", Toast.LENGTH_SHORT).show()
             return false
         }
-        if(!accCode.isDigitsOnly() || accCode.length != 3){
+
+        if (!accCode.isDigitsOnly() || accCode.length != 3) {
             Toast.makeText(requireContext(), "Invalid Security code.", Toast.LENGTH_SHORT).show()
             return false
         }
 
-        if(!accAmount.isDigitsOnly()){
-            Toast.makeText(requireContext(), "Amount should be digit number.", Toast.LENGTH_SHORT).show()
+        try {
+            // Attempt to parse accAmount as a double
+            accAmount.toDouble()
+        } catch (e: NumberFormatException) {
+            // Show an error message if accAmount is not a valid double
+            Toast.makeText(requireContext(), "Amount should be a valid number.", Toast.LENGTH_SHORT).show()
             return false
         }
 
-
         return true // All validation checks passed
     }
+
 
     override fun onEditButtonClick(position: Int) {
         val inflater = LayoutInflater.from(requireContext())
