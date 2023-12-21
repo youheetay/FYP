@@ -33,12 +33,14 @@
             android:background="@color/cardview_shadow_start_color">
 
             <ImageView
+                android:backgroundTint="@color/white"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:background="@drawable/baseline_person_2_24"
                 android:id="@+id/profileIc"/>
 
             <EditText
+                android:textColor="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/profileEditName"
@@ -56,6 +58,7 @@
                 android:id="@+id/dividerName"/>
 
             <ImageView
+                android:backgroundTint="@color/white"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:background="@drawable/baseline_mail_outline_24"
@@ -64,6 +67,7 @@
                 android:layout_marginTop="20dp"/>
 
             <TextView
+                android:textColor="@color/white"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/profileEditEmail"
@@ -83,6 +87,7 @@
                 android:id="@+id/dividerEmail"/>
 
             <ImageView
+                android:backgroundTint="@color/white"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:background="@drawable/baseline_phone_android_24"
@@ -91,6 +96,7 @@
                 android:layout_marginTop="20dp"/>
 
             <EditText
+                android:textColor="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/profileEditPhone"
@@ -110,6 +116,7 @@
                 android:id="@+id/dividerPhone"/>
 
             <ImageView
+                android:backgroundTint="@color/white"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:background="@drawable/baseline_male_24"
@@ -119,6 +126,7 @@
                 android:visibility="visible"/>
 
             <ImageView
+                android:backgroundTint="@color/white"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:background="@drawable/baseline_female_24"
@@ -128,6 +136,8 @@
                 android:visibility="invisible"/>
 
             <Spinner
+                android:background="@color/white"
+                android:textColor="@color/white"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/profileEditGender"
@@ -148,6 +158,8 @@
             android:gravity="center">
 
             <Button
+                android:backgroundTint="@color/floatingBtnColor"
+                android:textColor="@color/black"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:text="Edit Profile"
@@ -156,6 +168,8 @@
                 android:id="@+id/editProfileConfirmBtn"/>
 
             <Button
+                android:backgroundTint="@color/floatingBtnColor"
+                android:textColor="@color/black"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

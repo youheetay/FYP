@@ -142,7 +142,7 @@ public class PayActivity extends AppCompatActivity {
                     .document(documentId)
                     .set(expense)
                     .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(PayActivity.this, "Expense stored in Firestore", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PayActivity.this, "Pay successfully", Toast.LENGTH_SHORT).show();
                     })
                     .addOnFailureListener(e -> {
                         Toast.makeText(PayActivity.this, "Error storing expense in Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();

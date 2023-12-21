@@ -13,6 +13,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.text.isDigitsOnly
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fyp.Account
@@ -104,7 +105,7 @@ class AccountFragment : Fragment(), accountAdapter.OnButtonClickListener {
 
             if(validateInput(accName,accCardNumStr,accDateStr,accCodeStr,accAmountStr)){
 
-                val accCardNum = accCardNumStr.toInt()
+                val accCardNum = accCardNumStr.toLong()
                 val accDate = accDateStr.toInt()
                 val accCode = accCodeStr.toInt()
                 val accAmount = accAmountStr.toDouble()
@@ -168,6 +169,24 @@ class AccountFragment : Fragment(), accountAdapter.OnButtonClickListener {
             return false
         }
 
+        if(!accCardNumber.isDigitsOnly() || accCardNumber.length != 16){
+            Toast.makeText(requireContext(), "Invalid format for card number", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        if(!accDate.isDigitsOnly() || accDate.length != 4){
+            Toast.makeText(requireContext(), "Invalid format for year", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        if(!accCode.isDigitsOnly() || accCode.length != 3){
+            Toast.makeText(requireContext(), "Invalid Security code.", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        if(!accAmount.isDigitsOnly()){
+            Toast.makeText(requireContext(), "Amount should be digit number.", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
 
         return true // All validation checks passed
     }
@@ -202,7 +221,7 @@ class AccountFragment : Fragment(), accountAdapter.OnButtonClickListener {
             val addBalanceStr = addBalanceEditText.text.toString()
 
             if (validateInput(accName, accCardNumStr, accDateStr, accCodeStr, accAmountStr)) {
-                val accCardNum = accCardNumStr.toInt()
+                val accCardNum = accCardNumStr.toLong()
                 val accDate = accDateStr.toInt()
                 val accCode = accCodeStr.toInt()
                 val accAmount = accAmountStr.toDouble()

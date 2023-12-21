@@ -83,6 +83,7 @@ class dashboardAdapter(
                             "You have deleted successfully",
                             Toast.LENGTH_SHORT
                         ).show()
+                        notifyDataSetChanged()
                         Log.d("dashboardAdapter", "Expense deleted successfully")
                     }
                     .addOnFailureListener { exception ->
