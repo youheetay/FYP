@@ -95,7 +95,7 @@
                 android:id="@+id/cancelEditBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/dashboardItem"
+                android:backgroundTint="@color/floatingBtnColor"
                 android:src="@android:drawable/ic_menu_close_clear_cancel"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -117,7 +117,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="110dp"
                 android:layout_marginTop="8dp"
-                android:backgroundTint="#FFFFFF"
+                android:backgroundTint="@color/floatingBtnColor"
                 android:src="@drawable/baseline_delete_24"
                 app:layout_constraintStart_toEndOf="@+id/textView18"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -128,7 +128,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:backgroundTint="@color/dashboardItem"
+                android:backgroundTint="@color/floatingBtnColor"
                 android:src="@drawable/baseline_done_24"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"

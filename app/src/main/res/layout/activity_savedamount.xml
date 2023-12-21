@@ -33,6 +33,7 @@
                 android:layout_marginTop="10dp"
                 android:text="Plan Details"
                 android:textColor="#FFFDFD"
+                android:textSize="16sp"
                 app:layout_constraintStart_toEndOf="@+id/backBtn"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -69,6 +70,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="56dp"
+                android:backgroundTint="@color/floatingBtnColor"
                 android:text="ADD SAVED AMOUNT"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -79,6 +81,7 @@
                 android:id="@+id/setReachedBtn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:backgroundTint="@color/floatingBtnColor"
                 android:text="SET PLAN AS REACHED"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
