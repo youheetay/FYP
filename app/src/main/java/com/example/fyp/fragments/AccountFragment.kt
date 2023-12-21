@@ -13,6 +13,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.text.isDigitsOnly
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fyp.Account
@@ -104,7 +105,7 @@ class AccountFragment : Fragment(), accountAdapter.OnButtonClickListener {
 
             if(validateInput(accName,accCardNumStr,accDateStr,accCodeStr,accAmountStr)){
 
-                val accCardNum = accCardNumStr.toInt()
+                val accCardNum = accCardNumStr.toLong()
                 val accDate = accDateStr.toInt()
                 val accCode = accCodeStr.toInt()
                 val accAmount = accAmountStr.toDouble()
@@ -160,17 +161,40 @@ class AccountFragment : Fragment(), accountAdapter.OnButtonClickListener {
         addDialog.show()
     }
 
-    private fun validateInput(accName: String, accCardNumber: String, accDate : String, accCode : String, accAmount : String): Boolean
-    {
+    private fun validateInput(accName: String, accCardNumber: String, accDate: String, accCode: String, accAmount: String): Boolean {
         if (accName.isEmpty() || accCardNumber.isEmpty() || accDate.isEmpty() || accCode.isEmpty() || accAmount.isEmpty()) {
             // Show an error message for empty fields
             Toast.makeText(requireContext(), "Fields cannot be empty", Toast.LENGTH_SHORT).show()
             return false
         }
 
+        if (!accCardNumber.isDigitsOnly() || accCardNumber.length != 16) {
+            Toast.makeText(requireContext(), "Invalid format for card number", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        if (!accDate.isDigitsOnly() || accDate.length != 4) {
+            Toast.makeText(requireContext(), "Invalid format for year", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        if (!accCode.isDigitsOnly() || accCode.length != 3) {
+            Toast.makeText(requireContext(), "Invalid Security code.", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        try {
+            // Attempt to parse accAmount as a double
+            accAmount.toDouble()
+        } catch (e: NumberFormatException) {
+            // Show an error message if accAmount is not a valid double
+            Toast.makeText(requireContext(), "Amount should be a valid number.", Toast.LENGTH_SHORT).show()
+            return false
+        }
 
         return true // All validation checks passed
     }
+
 
     override fun onEditButtonClick(position: Int) {
         val inflater = LayoutInflater.from(requireContext())
@@ -202,7 +226,7 @@ class AccountFragment : Fragment(), accountAdapter.OnButtonClickListener {
             val addBalanceStr = addBalanceEditText.text.toString()
 
             if (validateInput(accName, accCardNumStr, accDateStr, accCodeStr, accAmountStr)) {
-                val accCardNum = accCardNumStr.toInt()
+                val accCardNum = accCardNumStr.toLong()
                 val accDate = accDateStr.toInt()
                 val accCode = accCodeStr.toInt()
                 val accAmount = accAmountStr.toDouble()

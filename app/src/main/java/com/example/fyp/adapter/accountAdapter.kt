@@ -25,7 +25,7 @@ class accountAdapter(private val account: ArrayList<Account>, private val button
     override fun onBindViewHolder(holder: accountAdapter.MyViewHolder, position: Int) {
         val account : Account = account[position]
         holder.accName.text = account.accName
-        holder.accCardNumber.text = account.accCardNumber.toString()
+        holder.accCardNumber.text = account.accCardNumber.toString().takeLast(4)
         holder.accBalance.text = String.format("%.2f", account.accCardAmount)
 
         var buttonsVisible = false // Initially, buttons are not visible

@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -25,6 +26,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.core.text.isDigitsOnly
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -511,6 +513,7 @@ class DashBoardFragment : Fragment() {
                 expense.eNum = eNum
                 expense.eDate = eDate
                 expense.eCategory = eCategory
+                expense.isButtonsLayoutVisible = false
 
                 // Update the document in Firestore
                 updateExpenseInFirestore(expense)
@@ -816,6 +819,12 @@ class DashBoardFragment : Fragment() {
             Toast.makeText(requireContext(), "Fields cannot be empty", Toast.LENGTH_SHORT).show()
             return false
         }
+
+        if(!eNumStr.isDigitsOnly()){
+            Toast.makeText(requireContext(), "Amount cannot be character", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
         val eNum: Double? = eNumStr.toDoubleOrNull()
 
         if (eNum == null && eNum == 0.0) {
@@ -830,7 +839,7 @@ class DashBoardFragment : Fragment() {
         }
 
         if(eAccount == "Select Account"){
-            Toast.makeText(requireContext(), "Please select an account", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Please select an account or create an account", Toast.LENGTH_SHORT).show()
             return false
         }
 

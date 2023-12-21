@@ -6,14 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".ResetActivity"
     android:orientation="vertical"
-    android:gravity="center">
+    android:gravity="center"
+    android:background="@color/backgroundColor">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="30dp"
         app:cardCornerRadius="30dp"
-        app:cardElevation="20dp">
+        app:cardElevation="20dp"
+        app:cardBackgroundColor="@color/bottomNavColor">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -27,7 +29,8 @@
                 android:layout_height="120dp"
                 android:background="@drawable/baseline_lock_24"
                 android:layout_gravity="center"
-                android:layout_margin="10dp"/>
+                android:layout_margin="10dp"
+                android:backgroundTint="@color/white"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -36,7 +39,7 @@
                 android:textSize="30sp"
                 android:textAlignment="center"
                 android:textStyle="bold"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:layout_marginBottom="15dp"/>
 
             <TextView
@@ -45,7 +48,7 @@
                 android:text="Provide your email account to reset your password"
                 android:textSize="12sp"
                 android:textAlignment="center"
-                android:textColor="@color/black"/>
+                android:textColor="@color/white"/>
 
             <EditText
                 android:layout_width="match_parent"
@@ -53,9 +56,11 @@
                 android:id="@+id/resetEmail"
                 android:drawableLeft="@drawable/baseline_person_2_24"
                 android:drawablePadding="8dp"
+                android:drawableTint="@color/white"
                 android:hint="Email"
+                android:textColorHint="@color/white"
                 android:padding="8dp"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textColorHighlight="@color/cardview_dark_background"
                 android:layout_marginTop="40dp"/>
 
@@ -64,17 +69,21 @@
                 android:layout_height="60dp"
                 android:id="@+id/resetBtn"
                 android:text="Reset"
+                android:textColor="@color/black"
                 android:textSize="18sp"
                 android:layout_marginTop="30dp"
-                app:cornerRadius = "20dp"/>
+                app:cornerRadius = "20dp"
+                android:backgroundTint="@color/floatingBtnColor"/>
 
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:id="@+id/backBtn"
                 android:text="Back"
+                android:textColor="@color/black"
                 android:textSize="18sp"
-                app:cornerRadius = "20dp"/>
+                app:cornerRadius = "20dp"
+                android:backgroundTint="@color/floatingBtnColor"/>
 
         </LinearLayout>
 

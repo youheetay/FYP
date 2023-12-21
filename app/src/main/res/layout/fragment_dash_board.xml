@@ -107,7 +107,8 @@
         android:layout_gravity="end"
         android:layout_marginTop="74dp"
         android:entries="@array/sort_options"
-        android:prompt="@string/sort_prompt" />
+        android:prompt="@string/sort_prompt"
+        android:background="@color/white"/>
 
 
     <androidx.recyclerview.widget.RecyclerView

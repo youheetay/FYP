@@ -7,14 +7,15 @@
     tools:context=".RegisterActivity"
     android:gravity="center"
     android:orientation="vertical"
-    >
+    android:background="@color/backgroundColor">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="30dp"
         app:cardCornerRadius="30dp"
-        app:cardElevation="20dp">
+        app:cardElevation="20dp"
+        app:cardBackgroundColor="@color/bottomNavColor">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -31,7 +32,7 @@
                 android:textSize="36sp"
                 android:textAlignment="center"
                 android:textStyle="bold"
-                android:textColor="@color/black"/>
+                android:textColor="@color/colorWhite"/>
 
             <EditText
                 android:layout_width="match_parent"
@@ -39,9 +40,11 @@
                 android:id="@+id/regUser"
                 android:drawableLeft="@drawable/baseline_person_2_24"
                 android:drawablePadding="8dp"
+                android:drawableTint="@color/white"
                 android:hint="Email"
+                android:textColorHint="@color/white"
                 android:padding="8dp"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textColorHighlight="@color/cardview_dark_background"
                 android:layout_marginTop="40dp"/>
 
@@ -51,10 +54,12 @@
                 android:id="@+id/regPassword"
                 android:drawableLeft="@drawable/baseline_lock_24"
                 android:drawablePadding="8dp"
+                android:drawableTint="@color/white"
                 android:hint="Password"
+                android:textColorHint="@color/white"
                 android:inputType="textPassword"
                 android:padding="8dp"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textColorHighlight="@color/cardview_dark_background"
                 android:layout_marginTop="20dp"/>
 
@@ -64,10 +69,12 @@
                 android:id="@+id/regPasswordConfirm"
                 android:drawableLeft="@drawable/baseline_lock_24"
                 android:drawablePadding="8dp"
+                android:drawableTint="@color/white"
                 android:hint="Enter again password"
+                android:textColorHint="@color/white"
                 android:inputType="textPassword"
                 android:padding="8dp"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textColorHighlight="@color/cardview_dark_background"
                 android:layout_marginTop="20dp"/>
 
@@ -77,8 +84,10 @@
                 android:id="@+id/registerBtn"
                 android:text="Register"
                 android:textSize="18sp"
+                android:textColor="@color/black"
                 android:layout_marginTop="30dp"
-                app:cornerRadius = "20dp"/>
+                app:cornerRadius = "20dp"
+                android:backgroundTint="@color/floatingBtnColor"/>
 
         </LinearLayout>
 
@@ -90,6 +99,6 @@
         android:gravity="center"
         android:text="Already have an account?"
         android:id="@+id/signInText"
-        android:textColor="@color/black"/>
+        android:textColor="@color/colorWhite"/>
 
 </LinearLayout>

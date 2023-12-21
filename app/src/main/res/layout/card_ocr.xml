@@ -13,28 +13,42 @@
             android:id="@+id/ocrImage"
             android:layout_width="250dp"
             android:layout_height="250dp"
-            android:layout_gravity=""/>
+            android:layout_gravity="center"/>
+
+        <TextView
+            android:textStyle="bold"
+            android:layout_margin="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Scanned Text" />
 
         <TextView
             android:id="@+id/ocrText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="TextView"
-            android:layout_margin="50dp"/>
+            android:layout_margin="20dp"/>
+
+        <TextView
+            android:textStyle="bold"
+            android:layout_margin="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Value get from text" />
 
         <TextView
             android:id="@+id/ocrNumber"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="TextView"
-            android:layout_margin="50dp"/>
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"/>
 
         <Spinner
-            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/spinnerAccountOcr"
-            android:layout_marginBottom="10dp"/>
+            android:layout_margin="20dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"

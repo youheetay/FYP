@@ -6,14 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".ProfileSetupActivity"
     android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/backgroundColor">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="30dp"
         app:cardCornerRadius="30dp"
-        app:cardElevation="20dp">
+        app:cardElevation="20dp"
+        app:cardBackgroundColor="@color/bottomNavColor">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -30,9 +32,10 @@
                 android:textSize="36sp"
                 android:textAlignment="center"
                 android:textStyle="bold"
-                android:textColor="@color/black"/>
+                android:textColor="@color/white"/>
 
             <TextView
+                android:textColor="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Email"
@@ -40,6 +43,7 @@
                 android:layout_marginTop="40dp"/>
 
             <TextView
+                android:textColor="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:text="Email"
@@ -51,12 +55,14 @@
                 android:layout_height="50dp"
                 android:id="@+id/profileSetUser"
                 android:hint="Username"
+                android:textColorHint="@color/white"
                 android:padding="8dp"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textColorHighlight="@color/cardview_dark_background"
                 android:layout_marginTop="20dp"/>
 
             <TextView
+                android:textColor="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Gender"
@@ -65,6 +71,7 @@
                 android:layout_marginTop="20dp"/>
 
             <Spinner
+                android:background="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:id="@+id/profileSetGender"
@@ -76,18 +83,21 @@
                 android:layout_height="50dp"
                 android:id="@+id/profileSetContact"
                 android:hint="Contact Number"
+                android:textColorHint="@color/white"
                 android:inputType="phone"
                 android:padding="8dp"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textColorHighlight="@color/cardview_dark_background"
                 android:layout_marginTop="20dp"/>
 
 
             <Button
+                android:backgroundTint="@color/floatingBtnColor"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:id="@+id/proceedBtn"
                 android:text="Proceed"
+                android:textColor="@color/black"
                 android:textSize="18sp"
                 android:layout_marginTop="30dp"
                 app:cornerRadius = "20dp"/>
